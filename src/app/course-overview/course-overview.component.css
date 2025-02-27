@@ -1,0 +1,60 @@
+.sidenav-container {
+  height: 100vh;
+}
+
+mat-sidenav {
+  width: 250px;
+}
+
+mat-toolbar {
+  display: flex;
+  align-items: center;
+}
+
+button[mat-icon-button] {
+  margin-right: 10px;
+}
+
+  
+  .sidenav {
+    width: 250px;
+    background: #f4f4f4;
+  }
+  
+  .content {
+    padding: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .subtopic-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .subtopic-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Push button to the right */
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .quiz-button {
+    color: white;
+    background: #3f51b5;
+    border-radius: 5px;
+    padding: 5px 10px;
+  }
+  
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

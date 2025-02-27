@@ -1,0 +1,42 @@
+<mat-toolbar color="primary" class="navbar">
+    <div [routerLink]="'/'" class="logo">
+        <span class="logo__title">Question<span class="logo__highlight">Banker</span></span>
+        <span class="logo__subtitle">by Krugman Insights</span>
+    </div>
+
+    <span class="navbar__spacer"></span>
+
+    <nav class="navbar__menu">
+        <button mat-button [matMenuTriggerFor]="questionBankMenu">QuestionBank</button>
+        <mat-menu #questionBankMenu="matMenu">
+            <button mat-menu-item [matMenuTriggerFor]="accountingFinanceMenu">Accounting & Finance</button>
+            <mat-menu #accountingFinanceMenu="matMenu">
+                <button mat-menu-item [routerLink]="['/membership', 'Accounting & Finance', 'Basic']">Basic</button>
+                <button mat-menu-item [routerLink]="['/membership', 'Accounting & Finance', 'Pro']">Pro</button>
+            </mat-menu>
+
+            <button mat-menu-item [matMenuTriggerFor]="investmentBankingMenu">Investment Banking</button>
+            <mat-menu #investmentBankingMenu="matMenu">
+                <button mat-menu-item [routerLink]="['/membership', 'Investment Banking', 'Basic']">Basic</button>
+                <button mat-menu-item [routerLink]="['/membership', 'Investment Banking', 'Pro']">Pro</button>
+            </mat-menu>
+
+            <button mat-menu-item [matMenuTriggerFor]="salesTradingMenu">Sales & Trading</button>
+            <mat-menu #salesTradingMenu="matMenu">
+                <button mat-menu-item [routerLink]="['/membership', 'Sales & Trading', 'Basic']">Basic</button>
+                <button mat-menu-item [routerLink]="['/membership', 'Sales & Trading', 'Pro']">Pro</button>
+            </mat-menu>
+        </mat-menu>
+
+        <button mat-button [routerLink]="['/course-overview']">Course Overview</button>
+    </nav>
+
+    <nav class="auth">
+        <button mat-button routerLink="/login">Login</button>
+        <button mat-raised-button color="accent" routerLink="/signup">Signup</button>
+    </nav>
+
+    <button mat-icon-button class="navbar__toggle">
+        <mat-icon>menu</mat-icon>
+    </button>
+</mat-toolbar>

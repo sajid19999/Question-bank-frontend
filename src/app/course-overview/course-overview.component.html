@@ -1,0 +1,40 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidenav (Collapsible for Mobile) -->
+  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
+    <mat-nav-list>
+      <a mat-list-item (click)="selectCourse('Accounting & Finance', sidenav)">Accounting & Finance</a>
+      <a mat-list-item (click)="selectCourse('Investment Banking', sidenav)">Investment Banking</a>
+      <a mat-list-item (click)="selectCourse('Sales & Trading', sidenav)">Sales & Trading</a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Main Content -->
+  <mat-sidenav-content>
+    <mat-toolbar>
+      <button *ngIf="isMobile" mat-icon-button (click)="sidenav.open()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>Course Overview</span>
+    </mat-toolbar>
+
+    <div *ngIf="selectedCourse">
+      <h2>{{ selectedCourse }}</h2>
+
+      <div *ngFor="let chapter of chapters[selectedCourse]">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <span>{{ chapter.title }}</span>
+          </mat-expansion-panel-header>
+
+          <ul class="subtopic-list">
+            <li *ngFor="let subtopic of chapter.subtopics" class="subtopic-item">
+              <span>{{ subtopic }}</span>
+              <button mat-button class="quiz-button" (click)="startQuiz(subtopic)">Take Quiz</button>
+            </li>
+          </ul>
+          
+        </mat-expansion-panel>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

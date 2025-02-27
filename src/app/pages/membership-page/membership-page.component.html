@@ -1,0 +1,8 @@
+<section class="membership-page">
+    <div class="membership-card">
+      <h2>{{ category }} {{ membershipType }} Membership Required</h2>
+      <p>You must be a {{ category }} {{ membershipType }} member to access this content.</p>
+      <button class="join-now" [routerLink]="['/membership-info', category, membershipType]">Join Now</button>
+      <p>Already a member? <a routerLink="/login" style="color: #00B0F0; text-decoration: underline; cursor: pointer;">Log in here</a></p>
+    </div>
+  </section>
