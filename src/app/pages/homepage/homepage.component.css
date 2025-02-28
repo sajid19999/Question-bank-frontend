@@ -23,10 +23,47 @@
     max-width: 800px;
 }
 
+.service-title {
+    font-size: 1.8rem;
+    margin: 3rem 0 2rem;
+    text-align: center;
+    color: #333;
+    font-weight: bold;
+}
+
+.service-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    text-align: center;
+}
+
+.service-box {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-box:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.service-box img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+}
+
 .slider {
     margin-top: 70px;
     background-color: whitesmoke;
-    padding: 8em 2em;
+    padding: 4em 2em;
 }
 
 .slide-track {
@@ -41,25 +78,92 @@
     height: 100px;
     animation: scroll 60s linear infinite;
 }
+.subject-section {
+    position: relative;
+    padding: 80px 0;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,1) 60%, rgba(138,103,187,0.2) 100%);
+}
 
-.slider-title {
-    font-size: 1.5rem;
-    margin-top: 2rem;
+.subject-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px;
+    position: relative;
+    z-index: 2;
+}
+
+.subject-content {
+    max-width: 40%;
+}
+
+.subject-content h3 {
+    font-size: 28px;
+    font-weight: bold;
     color: #333;
 }
-.Try_free {
-    background-color: #00B0F0;
-    font-size: 1rem;
-    padding: 10px 20px;
-    border-radius: 8px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+
+.subject-content p {
+    font-size: 16px;
+    color: #555;
+    margin: 15px 0;
 }
 
-.Try_free:hover {
-    background-color: #008ac0;
+.create-account {
+    margin-top: 10px;
+}
+
+.cancel-text {
+    font-size: 14px;
+    color: #777;
+    margin-top: 10px;
+}
+
+.subject-boxes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 50%;
+}
+
+.subject-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.subject-box img {
+    width: 50px;
+    margin-bottom: 10px;
+}
+
+.subject-box h4 {
+    font-size: 18px;
+    color: #222;
+}
+
+.subject-box p {
+    font-size: 14px;
+    color: #666;
+}
+
+.subject-box:hover {
+    transform: translateY(-10px);
+}
+
+#waveCanvas {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    z-index: 1;
 }
 
 @keyframes scroll {
@@ -84,7 +188,7 @@
         font-size: 1rem;
     }
 
-    .slide img {
-        height: 100px;
+    .service-container {
+        grid-template-columns: 1fr;
     }
 }
