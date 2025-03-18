@@ -648,11 +648,6 @@ button:active {
         font-size: 1rem;
     }
 
-<<<<<<< HEAD
-    .service-container {
-        grid-template-columns: 1fr;
-    }
-=======
     .homepage__image img {
         margin-top: 2rem;
     }
@@ -677,5 +672,4 @@ button:active {
         padding: 10px 20px;
         font-size: 16px;
     }
->>>>>>> 9c45eee (intial push)
 }
