@@ -1,42 +1,60 @@
 <mat-toolbar color="primary" class="navbar">
-    <div [routerLink]="'/'" class="logo">
-        <span class="logo__title">Question<span class="logo__highlight">Banker</span></span>
-        <span class="logo__subtitle">by Krugman Insights</span>
-    </div>
+  <div [routerLink]="'/'" class="logo">
+    <span class="logo__title">Question<span class="logo__highlight">Banker</span></span>
+    <span class="logo__subtitle">by Krugman Insights</span>
+  </div>
 
-    <span class="navbar__spacer"></span>
+  <span class="navbar__spacer"></span>
 
-    <nav class="navbar__menu">
-        <button mat-button [matMenuTriggerFor]="questionBankMenu">QuestionBank</button>
-        <mat-menu #questionBankMenu="matMenu">
-            <button mat-menu-item [matMenuTriggerFor]="accountingFinanceMenu">Accounting & Finance</button>
-            <mat-menu #accountingFinanceMenu="matMenu">
-                <button mat-menu-item [routerLink]="['/membership', 'Accounting & Finance', 'Basic']">Basic</button>
-                <button mat-menu-item [routerLink]="['/membership', 'Accounting & Finance', 'Pro']">Pro</button>
-            </mat-menu>
+  <nav class="navbar__menu">
+    <button mat-button [matMenuTriggerFor]="questionBankMenu">QuestionBank</button>
+    <mat-menu #questionBankMenu="matMenu">
+      <!-- Accounting & Finance -->
+      <button mat-menu-item [matMenuTriggerFor]="accountingFinanceMenu">Accounting & Finance</button>
+      <mat-menu #accountingFinanceMenu="matMenu">
+        <button mat-menu-item [routerLink]="['/membership', 'Accounting & Finance', 'Basic']">Basic</button>
+        <button mat-menu-item (click)="selectTopic('Accounting & Finance', 'Pro')">Pro</button>
+      </mat-menu>
 
-            <button mat-menu-item [matMenuTriggerFor]="investmentBankingMenu">Investment Banking</button>
-            <mat-menu #investmentBankingMenu="matMenu">
-                <button mat-menu-item [routerLink]="['/membership', 'Investment Banking', 'Basic']">Basic</button>
-                <button mat-menu-item [routerLink]="['/membership', 'Investment Banking', 'Pro']">Pro</button>
-            </mat-menu>
+      <!-- Investment Banking -->
+      <button mat-menu-item [matMenuTriggerFor]="investmentBankingMenu">Investment & Banking</button>
+      <mat-menu #investmentBankingMenu="matMenu">
+        <button mat-menu-item (click)="selectTopic('Investment & Banking', 'Basic')">Basic</button>
+        <button mat-menu-item (click)="selectTopic('Investment & Banking', 'Pro')">Pro</button>
+      </mat-menu>
 
-            <button mat-menu-item [matMenuTriggerFor]="salesTradingMenu">Sales & Trading</button>
-            <mat-menu #salesTradingMenu="matMenu">
-                <button mat-menu-item [routerLink]="['/membership', 'Sales & Trading', 'Basic']">Basic</button>
-                <button mat-menu-item [routerLink]="['/membership', 'Sales & Trading', 'Pro']">Pro</button>
-            </mat-menu>
-        </mat-menu>
+      <!-- Sales & Trading -->
+      <button mat-menu-item [matMenuTriggerFor]="salesTradingMenu">Sales & Trading</button>
+      <mat-menu #salesTradingMenu="matMenu">
+        <button mat-menu-item (click)="selectTopic('Sales & Trading', 'Basic')">Basic</button>
+        <button mat-menu-item (click)="selectTopic('Sales & Trading', 'Pro')">Pro</button>
+      </mat-menu>
+    </mat-menu>
 
-        <button mat-button [routerLink]="['/course-overview']">Course Overview</button>
-    </nav>
+    <button mat-button [routerLink]="['/course-overview']">Course Overview</button>
+  </nav>
 
-    <nav class="auth">
-        <button mat-button routerLink="/login">Login</button>
-        <button mat-raised-button color="accent" routerLink="/signup">Signup</button>
-    </nav>
+  <nav class="auth">
+    <!-- Show profile photo and dropdown if user is logged in -->
+    <ng-container *ngIf="isLoggedIn; else loginSignup">
+      <button mat-button [matMenuTriggerFor]="profileMenu">
+        <img src="assets/default-profile.jpg" alt="Profile Photo" class="profile-photo" />
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #profileMenu="matMenu">
+        <button mat-menu-item [routerLink]="['/account']">My Account</button>
+        <button mat-menu-item (click)="logout()">Logout</button>
+      </mat-menu>
+    </ng-container>
 
-    <button mat-icon-button class="navbar__toggle">
-        <mat-icon>menu</mat-icon>
-    </button>
+    <!-- Show login and signup buttons if user is not logged in -->
+    <ng-template #loginSignup>
+      <button mat-button routerLink="/login">Login</button>
+      <button mat-raised-button color="accent" routerLink="/signup">Signup</button>
+    </ng-template>
+  </nav>
+
+  <button mat-icon-button class="navbar__toggle" (click)="toggleMenu()">
+    <mat-icon>menu</mat-icon>
+  </button>
 </mat-toolbar>

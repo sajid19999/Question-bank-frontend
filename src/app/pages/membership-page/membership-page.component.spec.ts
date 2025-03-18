@@ -1,18 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MembershipComponent } from './membership-page.component'; // Correct import
 
-import { MembershipPageComponent } from './membership-page.component';
-
-describe('MembershipPageComponent', () => {
-  let component: MembershipPageComponent;
-  let fixture: ComponentFixture<MembershipPageComponent>;
+describe('MembershipComponent', () => { // Update the describe block name
+  let component: MembershipComponent;
+  let fixture: ComponentFixture<MembershipComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MembershipPageComponent]
-    })
-    .compileComponents();
+      imports: [MembershipComponent], // Use the correct component
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(MembershipPageComponent);
+    fixture = TestBed.createComponent(MembershipComponent); // Use the correct component
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

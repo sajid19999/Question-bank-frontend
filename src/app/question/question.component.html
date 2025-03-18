@@ -1,0 +1,190 @@
+<mat-sidenav-container class="example-container">
+  <!-- Left Sidebar -->
+  <mat-sidenav mode="side" opened class="sidebar">
+    <mat-nav-list>
+      <h3 class="sidebar-title">Topics</h3>
+      <mat-radio-group [(ngModel)]="selectedTopic" (change)="onTopicSelect(selectedTopic)">
+        <mat-radio-button *ngFor="let topic of allTopics" [value]="topic">
+          {{ topic }}
+        </mat-radio-button>
+      </mat-radio-group>
+    </mat-nav-list>
+
+    <!-- Right Sidebar (nested inside the left sidebar) -->
+    <mat-sidenav mode="side" [opened]="showRightSidebar" position="end" class="nested-sidebar">
+      <mat-nav-list>
+        <div class="sidebar-header">
+          <h3 class="sidebar-title">{{ selectedTopic }}</h3>
+          <button mat-icon-button (click)="closeRightSidebar()" class="close-button">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <mat-accordion class="chapter-accordion">
+          <mat-expansion-panel *ngFor="let chapter of chapters">
+            <mat-expansion-panel-header class="chapter-header">
+              <mat-panel-title>{{ chapter.title }}</mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-nav-list>
+              <a mat-list-item *ngFor="let subtopic of chapter.subtopics" (click)="onSubtopicSelect(subtopic)">
+                {{ subtopic }}
+              </a>
+            </mat-nav-list>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </mat-nav-list>
+    </mat-sidenav>
+  </mat-sidenav>
+
+  <!-- Main Content -->
+  <mat-sidenav-content class="content">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <span class="breadcrumb-item">{{ selectedTopic }}</span>
+      <span *ngIf="selectedSubsection" class="breadcrumb-separator">></span>
+      <span *ngIf="selectedSubsection" class="breadcrumb-item">{{ selectedSubsection }}</span>
+    </div>
+
+    <div class="header-section">
+      <div class="selected-topic">
+        <h2>Selected Topic: {{ selectedTopic }}</h2>
+      </div>
+      <div class="check-score-button-container">
+        <button
+          *ngIf="isQuizStarted"
+          mat-button
+          class="check-score-button"
+          [disabled]="!isSubmitted"
+          [matTooltip]="scoreTooltip"
+          (click)="showResults()"
+        >
+          Check Your Score
+        </button>
+      </div>
+    </div>
+    <p *ngIf="!currentQuestion && !isLoading && !showSetupSection">Select a chapter and subtopic from the sidebar to view details.</p>
+
+    <!-- Loading Spinner -->
+    <mat-spinner *ngIf="isLoading" class="loading-spinner"></mat-spinner>
+    <div class="overlay" *ngIf="disableScreenshots"></div>
+    <div class="watermark" *ngIf="disableScreenshots">
+      <p>Confidential - Do Not Share</p>
+    </div>
+
+    <!-- Setup Section -->
+    <div *ngIf="showSetupSection && !isLoading" class="setup-section">
+      <mat-card class="setup-card">
+        <mat-card-header>
+          <mat-card-title>Question Format</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <!-- Question Type -->
+          <div class="setup-option">
+            <h3>Question Type:</h3>
+            <mat-radio-group [(ngModel)]="selectedQuestionType">
+              <mat-radio-button value="knowledge">Knowledge</mat-radio-button>
+              <mat-radio-button value="interview-style">Interview-Style</mat-radio-button>
+              <mat-radio-button value="case-study">Case-Study</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <!-- Timer -->
+          <div class="setup-option">
+            <h3>Show Timer:</h3>
+            <mat-radio-group [(ngModel)]="showTimer">
+              <mat-radio-button value="yes">Yes</mat-radio-button>
+              <mat-radio-button value="no">No</mat-radio-button>
+            </mat-radio-group>
+          </div>
+
+          <!-- Begin Button -->
+          <div class="begin-button">
+            <button mat-raised-button color="primary" (click)="startQuestions()">CLICK HERE TO BEGIN</button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Question Section -->
+    <div *ngIf="currentQuestion && !isLoading && !showSetupSection" class="question-container">
+      <mat-card class="question-card">
+        <mat-card-header>
+          <mat-card-title>Question {{ currentQuestionIndex + 1 }} of {{ questions.length }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ currentQuestion.question }}</p>
+          <mat-radio-group [(ngModel)]="selectedOption" (change)="onOptionSelect($event.value)">
+            <mat-radio-button
+              *ngFor="let option of currentQuestion.options; let i = index"
+              [value]="option"
+              [disabled]="isSubmitted"
+              [class.correct-answer]="isSubmitted && option === stripPrefix(currentQuestion.correctAnswer)"
+              [class.wrong-answer]="isSubmitted && option === selectedOption && option !== stripPrefix(currentQuestion.correctAnswer)"
+            >
+              {{ getOptionPrefix(i) }} {{ option }}
+          
+              <!-- Tick icon for correct answer -->
+              <mat-icon
+                *ngIf="isSubmitted && option === stripPrefix(currentQuestion.correctAnswer)"
+                class="correct-icon"
+              >
+                check_circle
+              </mat-icon>
+          
+              <!-- Cross icon for wrong answer -->
+              <mat-icon
+                *ngIf="isSubmitted && option === selectedOption && option !== stripPrefix(currentQuestion.correctAnswer)"
+                class="wrong-icon"
+              >
+                cancel
+              </mat-icon>
+            </mat-radio-button>
+          </mat-radio-group>
+          
+<!-- Check Your Score Button -->
+
+
+<!-- Result Popup -->
+<div *ngIf="showResultPopup" class="result-popup-overlay">
+<div class="result-popup">
+  <h2>Quiz Results</h2>
+  <p>You got {{ correctAnswers }} out of {{ totalQuestions }} questions correct!</p>
+  <p *ngIf="correctAnswers === totalQuestions">🎉 Perfect score! Keep it up! 🎉</p>
+  <p *ngIf="correctAnswers >= totalQuestions * 0.8 && correctAnswers < totalQuestions">👍 Great job! Almost there! 👍</p>
+  <p *ngIf="correctAnswers < totalQuestions * 0.8">💪 You can do better next time! 💪</p>
+  <button mat-button (click)="resetQuiz()">Restart Quiz</button>
+  <button mat-button (click)="closeResultPopup()">Back to Subsection</button>
+</div>
+</div>
+        </mat-card-content>
+        <mat-card-actions class="navigation-buttons">
+          <button mat-button class="nav-button prev-button" (click)="onPreviousQuestion()" [disabled]="currentQuestionIndex === 0">
+            Previous
+          </button>
+          <button mat-button class="nav-button submit-button" (click)="onSubmit()" [disabled]="!selectedOption || isSubmitted">
+            Submit
+          </button>
+          <button mat-button class="nav-button next-button" (click)="onNextQuestion()" [disabled]="currentQuestionIndex === questions.length - 1">
+            Next
+          </button>
+        </mat-card-actions>
+
+        <!-- Back to Subsection Button (Always Visible) -->
+        <div class="back-to-subsection">
+          <button mat-button class="back-button" (click)="backToSubsection()">
+            Back to Subsection
+          </button>
+        </div>
+
+        <!-- Correct Answer -->
+        <div *ngIf="isSubmitted" class="correct-answer-text">
+          <p><strong>Correct Answer:</strong> {{ currentQuestion.correctAnswer }}</p>
+        </div>
+      </mat-card>
+
+      <!-- Explanation -->
+      <div *ngIf="isSubmitted" class="explanation">
+        <h3>Explanation</h3>
+        <p>{{ currentQuestion.explanation }}</p>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

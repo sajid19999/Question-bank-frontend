@@ -1,0 +1,59 @@
+<div class="pricing-details-container">
+    <h2>Choose Your Plan</h2>
+  
+    <!-- Toggle for Monthly/Yearly Pricing -->
+    <div class="toggle-container">
+      <span>Monthly</span>
+      <mat-slide-toggle [(ngModel)]="isYearly" (ngModelChange)="togglePricing($event)"></mat-slide-toggle>
+
+      <span>Yearly</span>
+    </div>
+  
+    <!-- Accordion for Categories -->
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let category of categories">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ category.name }}</mat-panel-title>
+        </mat-expansion-panel-header>
+  
+        <mat-table [dataSource]="category.plans" class="mat-elevation-z8">
+          <!-- Plan Column -->
+          <ng-container matColumnDef="plan">
+            <mat-header-cell *matHeaderCellDef> Plan </mat-header-cell>
+            <mat-cell *matCellDef="let plan"> {{ plan.name }} </mat-cell>
+          </ng-container>
+  
+          <!-- Price Column -->
+          <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef> Price </mat-header-cell>
+            <mat-cell *matCellDef="let plan">
+              <span *ngIf="isYearly; else monthlyPrice">
+                {{ plan.yearlyPrice }}
+              </span>
+              <ng-template #monthlyPrice>
+                {{ plan.monthlyPrice }}
+              </ng-template>
+            </mat-cell>
+          </ng-container>
+  
+          <!-- Action Column -->
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+            <mat-cell *matCellDef="let plan">
+                <button
+                mat-raised-button
+                color="primary"
+                (click)="selectPlan(category.name, plan.type, plan.monthlyPrice, plan.yearlyPrice)"
+              >
+                Select Plan
+              </button>
+            </mat-cell>
+          </ng-container>
+  
+          <!-- Header and Row Definitions -->
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        </mat-table>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>

@@ -1,15 +1,41 @@
 import { Component, AfterViewInit, HostListener } from '@angular/core';
-import { OwlOptions } from 'ngx-owl-carousel-o';
-
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
+  imports: [CommonModule, FormsModule],
   styleUrls: ['./homepage.component.css'],
   standalone: true
 })
 export class HomepageComponent implements AfterViewInit {
-  
+  isYearly: boolean = false;
+  constructor(private router: Router) {}
+
+  offset: number = 0; // Controls the slider position
+
+  // Toggle between monthly and yearly pricing
+  togglePricing() {
+    this.isYearly = !this.isYearly;
+  }
+  navigateToPricingDetails() {
+    this.router.navigate(['/pricing-details']);
+  }
+  // Navigate to the previous slide
+  prevSlide() {
+    if (this.offset < 0) {
+      this.offset += 100; // Move to the previous slide
+    }
+  }
+
+  // Navigate to the next slide
+  nextSlide() {
+    if (this.offset > -200) {
+      this.offset -= 100; // Move to the next slide
+    }
+  }
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D | null;
   private lines: { frequency: number; amplitude: number; phase: number; verticalOffset: number }[] = [];

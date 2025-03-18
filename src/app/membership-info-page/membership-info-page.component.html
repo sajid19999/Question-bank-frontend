@@ -1,41 +1,112 @@
 <section class="membership-info">
-    <h2>Membership Information</h2>
-    <p>You have selected the {{ category }} {{ membershipType }} membership level.</p>
-    <p>The price for membership is {{ membershipType === 'Pro' ? '£29.00 per Month' : 'Free' }}.</p>
-    <p>
-      Do you have a discount code?
-      <a href="#" style="color: #00B0F0; text-decoration: underline; cursor: pointer;">
-        Click here to enter your discount code
-      </a>
-    </p>
-  
-    <h3>Account Information</h3>
-    <form (submit)="onSubmit($event)">
-      <label>Username *<input type="text" [(ngModel)]="username" required></label>
-  
-      <label>
-        Password *
-        <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password" required>
-        <button type="button" (click)="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</button>
-      </label>
-  
-      <label>
-        Confirm Password *
-        <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword" name="confirmPassword" required>
-        <button type="button" (click)="showConfirmPassword = !showConfirmPassword">{{ showConfirmPassword ? 'Hide' : 'Show' }}</button>
-      </label>
-      <p *ngIf="password && confirmPassword && password !== confirmPassword" style="color: red;">Passwords do not match!</p>
-  
-      <label>Email Address *<input type="email" [(ngModel)]="email" name="email" required></label>
-      <label>Confirm Email Address *<input type="email" [(ngModel)]="confirmEmail" name="confirmEmail" required></label>
-      <p *ngIf="email && confirmEmail && email !== confirmEmail" style="color: red;">Emails do not match!</p>
-  
-      <p>Already have an account? <a routerLink="/login" style="color: #00B0F0; text-decoration: underline;">Log in here</a></p>
-  
-      <label>
-        <input type="checkbox" required> I agree to the <a href="/terms">Terms & Conditions</a> *
-      </label>
-  
-      <button type="submit">Submit & Checkout</button>
-    </form>
-  </section>
+  <h2>Membership Information</h2>
+  <p>You have selected the {{ category }} {{ membershipType }} membership level.</p>
+  <p>
+    The price for membership is
+    {{ isYearly ? yearlyPrice : monthlyPrice }}.
+  </p>
+  <p>
+    Do you have a discount code?
+    <a href="#" style="color: #00B0F0; text-decoration: underline; cursor: pointer;">
+      Click here to enter your discount code
+    </a>
+  </p>
+
+  <!-- Toggle for Monthly/Yearly Pricing -->
+  <div class="toggle-container">
+    <span>Monthly</span>
+    <mat-slide-toggle [(ngModel)]="isYearly" (change)="togglePricing()">
+    </mat-slide-toggle>
+    <span>Yearly</span>
+  </div>
+
+  <h3>Account Information</h3>
+  <form [formGroup]="membershipForm" (submit)="onSubmit()">
+    <!-- Username -->
+    <mat-form-field appearance="outline">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" required>
+      <mat-error *ngIf="membershipForm.get('username')?.hasError('required')">
+        Username is required.
+      </mat-error>
+      <mat-error *ngIf="membershipForm.get('username')?.hasError('pattern')">
+        Username must contain only alphanumeric characters and underscores.
+      </mat-error>
+      <mat-error *ngIf="membershipForm.get('username')?.hasError('minlength')">
+        Username must be at least 3 characters long.
+      </mat-error>
+      <mat-error *ngIf="membershipForm.get('username')?.hasError('maxlength')">
+        Username cannot exceed 20 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Password -->
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password" required>
+      <button mat-icon-button matSuffix (click)="showPassword = !showPassword">
+        <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error *ngIf="membershipForm.get('password')?.hasError('required')">
+        Password is required.
+      </mat-error>
+      <mat-error *ngIf="membershipForm.get('password')?.hasError('pattern')">
+        Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+      </mat-error>
+      <mat-error *ngIf="membershipForm.get('password')?.hasError('minlength')">
+        Password must be at least 8 characters long.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Confirm Password -->
+    <mat-form-field appearance="outline">
+      <mat-label>Confirm Password</mat-label>
+      <input matInput [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" required>
+      <button mat-icon-button matSuffix (click)="showConfirmPassword = !showConfirmPassword">
+        <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error *ngIf="membershipForm.get('confirmPassword')?.hasError('required')">
+        Confirm Password is required.
+      </mat-error>
+      <mat-error *ngIf="membershipForm.get('confirmPassword')?.hasError('passwordMismatch')">
+        Passwords do not match.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline">
+      <mat-label>Email Address</mat-label>
+      <input matInput type="email" formControlName="email" required>
+      <mat-error *ngIf="membershipForm.get('email')?.hasError('required')">
+        Email is required.
+      </mat-error>
+      <mat-error *ngIf="membershipForm.get('email')?.hasError('email')">
+        Please enter a valid email address.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Confirm Email -->
+    <mat-form-field appearance="outline">
+      <mat-label>Confirm Email Address</mat-label>
+      <input matInput type="email" formControlName="confirmEmail" required>
+      <mat-error *ngIf="membershipForm.get('confirmEmail')?.hasError('required')">
+        Confirm Email is required.
+      </mat-error>
+      <mat-error *ngIf="membershipForm.get('confirmEmail')?.hasError('emailMismatch')">
+        Emails do not match.
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Terms & Conditions -->
+    <mat-checkbox formControlName="agreeToTerms" required>
+      I agree to the <a href="/terms">Terms & Conditions</a>
+    </mat-checkbox>
+
+    <!-- Submit Button -->
+    <button mat-raised-button color="primary" type="submit" [disabled]="membershipForm.invalid">
+      Submit & Checkout
+    </button>
+  </form>
+
+  <p>Already have an account? <a routerLink="/login" style="color: #00B0F0; text-decoration: underline;">Log in here</a></p>
+</section>

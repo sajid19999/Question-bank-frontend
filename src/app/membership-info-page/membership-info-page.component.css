@@ -1,61 +1,68 @@
 .membership-info {
-    max-width: 600px;
-    margin: 50px auto;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+h2, h3 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+button[mat-raised-button] {
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+a {
+  color: #00B0F0;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #007bb5;
+}
+/* Toggle container */
+.toggle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.toggle-container span {
+  font-size: 1rem;
+  color: #555;
+}
+@media screen and (max-width: 768px) {
+  .membership-info {
+    margin: 20px;
     padding: 20px;
-    background: #f9f9f9;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
-
-  h2, h3 {
-    color: #333;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-
-  label {
-    margin-bottom: 10px;
-  }
-
-  input[type="text"],
-  input[type="password"],
-  input[type="email"] {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
-
-  button {
-    background-color: #00B0F0;
-    color: #fff;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background-color: #007bb5;
-  }
-
-  @media screen and (max-width: 768px) {
-    .membership-info {
-      margin: 20px;
-      padding: 15px;
-    }
-
-    input[type="text"],
-    input[type="password"],
-    input[type="email"] {
-      padding: 6px;
-    }
-
-    button {
-      padding: 8px;
-    }
-  }
+}
