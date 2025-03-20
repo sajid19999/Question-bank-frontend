@@ -7,19 +7,27 @@ import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { NgIf } from '@angular/common';
 import { CommonModule } from '@angular/common';
+import { MatDivider } from '@angular/material/divider';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [MatToolbarModule, MatButtonModule, MatMenuModule, MatIconModule, RouterLink,MatIconModule,
+  imports: [
+    MatToolbarModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatIconModule,
     RouterLink,
     NgIf,
-    CommonModule],
+    MatDivider,
+    CommonModule,
+  ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
   isLoggedIn: boolean = false; // Track login state
+  menuOpen: boolean = false; // Track mobile menu state
 
   constructor(private router: Router, private authService: AuthService) {}
 
@@ -30,21 +38,27 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  // Handle topic selection
+  /**
+   * Handle topic selection
+   * @param topic - The selected topic (e.g., 'Accounting & Finance')
+   * @param membershipType - The membership type (e.g., 'Basic' or 'Pro')
+   */
   selectTopic(topic: string, membershipType: string): void {
     this.router.navigate(['/questions', topic, membershipType]);
   }
 
-  // Toggle mobile menu
-  menuOpen = false;
-  toggleMenu() {
+  /**
+   * Toggle mobile menu
+   */
+  toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
 
-  // Logout functionality
+  /**
+   * Logout functionality
+   */
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/']); // Redirect to home page
   }
 }
-

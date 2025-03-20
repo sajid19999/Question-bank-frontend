@@ -1,7 +1,8 @@
-import { Component, AfterViewInit, HostListener } from '@angular/core';
+import { Component, AfterViewInit, HostListener, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-homepage',
@@ -12,7 +13,7 @@ import { Router } from '@angular/router';
 })
 export class HomepageComponent implements AfterViewInit {
   isYearly: boolean = false;
-  constructor(private router: Router) {}
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: Object) {}
 
   offset: number = 0; // Controls the slider position
 
@@ -55,21 +56,25 @@ export class HomepageComponent implements AfterViewInit {
   };
 
   ngAfterViewInit(): void {
-    this.canvas = document.getElementById('waveCanvas') as HTMLCanvasElement;
-    this.ctx = this.canvas.getContext('2d');
+    if (isPlatformBrowser(this.platformId)) {
+      this.canvas = document.getElementById('waveCanvas') as HTMLCanvasElement;
+      this.ctx = this.canvas.getContext('2d');
 
-    if (!this.ctx) {
-      console.error('Canvas rendering context is null');
-      return;
+      if (!this.ctx) {
+        console.error('Canvas rendering context is null');
+        return;
+      }
+
+      this.resizeCanvas();
+      this.animate();
     }
-
-    this.resizeCanvas();
-    this.animate();
   }
 
   @HostListener('window:resize', ['$event'])
   onResize() {
-    this.resizeCanvas();
+    if (isPlatformBrowser(this.platformId)) {
+      this.resizeCanvas();
+    }
   }
 
   private initializeWaves(): void {
@@ -87,7 +92,7 @@ export class HomepageComponent implements AfterViewInit {
   }
 
   private animate(): void {
-    if (!this.ctx) return;
+    if (!this.ctx || !isPlatformBrowser(this.platformId)) return;
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.animationProgress += this.speed;
@@ -95,7 +100,7 @@ export class HomepageComponent implements AfterViewInit {
     this.lines.forEach((line, index) => {
       const gradient = this.ctx!.createLinearGradient(0, 0, this.waveWidth, 0);
       gradient.addColorStop(0, `rgba(138, 103, 187, ${0.7 - index * 0.1})`);
-      gradient.addColorStop(1, `rgba(138, 103, 187, ${0.1 - index * 0.03})`);
+gradient.addColorStop(1, `rgba(138, 103, 187, ${0.1 - index * 0.03})`);
 
       this.ctx!.beginPath();
       this.ctx!.lineWidth = 1.5;
@@ -119,10 +124,10 @@ export class HomepageComponent implements AfterViewInit {
   }
 
   private resizeCanvas(): void {
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
-    this.initializeWaves();
+    if (isPlatformBrowser(this.platformId)) {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      this.initializeWaves();
+    }
   }
- 
-  
 }

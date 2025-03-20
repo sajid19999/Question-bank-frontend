@@ -4,15 +4,14 @@
     <span class="logo__subtitle">by Krugman Insights</span>
   </div>
 
-  <span class="navbar__spacer"></span>
-
+  <!-- Desktop Menu -->
   <nav class="navbar__menu">
     <button mat-button [matMenuTriggerFor]="questionBankMenu">QuestionBank</button>
     <mat-menu #questionBankMenu="matMenu">
       <!-- Accounting & Finance -->
       <button mat-menu-item [matMenuTriggerFor]="accountingFinanceMenu">Accounting & Finance</button>
       <mat-menu #accountingFinanceMenu="matMenu">
-        <button mat-menu-item [routerLink]="['/membership', 'Accounting & Finance', 'Basic']">Basic</button>
+        <button mat-menu-item [routerLink]="['/questions', 'Accounting & Finance', 'Basic']">Basic</button>
         <button mat-menu-item (click)="selectTopic('Accounting & Finance', 'Pro')">Pro</button>
       </mat-menu>
 
@@ -34,9 +33,16 @@
     <button mat-button [routerLink]="['/course-overview']">Course Overview</button>
   </nav>
 
+  <!-- Auth Buttons (Always visible in desktop view) -->
   <nav class="auth">
+    <!-- Show login and signup buttons if user is not logged in -->
+    <ng-container *ngIf="!isLoggedIn; else profileMenu">
+      <button mat-button routerLink="/login">Login</button>
+      <button mat-raised-button color="accent" routerLink="/signup">Signup</button>
+    </ng-container>
+
     <!-- Show profile photo and dropdown if user is logged in -->
-    <ng-container *ngIf="isLoggedIn; else loginSignup">
+    <ng-template #profileMenu>
       <button mat-button [matMenuTriggerFor]="profileMenu">
         <img src="assets/default-profile.jpg" alt="Profile Photo" class="profile-photo" />
         <mat-icon>arrow_drop_down</mat-icon>
@@ -45,16 +51,29 @@
         <button mat-menu-item [routerLink]="['/account']">My Account</button>
         <button mat-menu-item (click)="logout()">Logout</button>
       </mat-menu>
-    </ng-container>
-
-    <!-- Show login and signup buttons if user is not logged in -->
-    <ng-template #loginSignup>
-      <button mat-button routerLink="/login">Login</button>
-      <button mat-raised-button color="accent" routerLink="/signup">Signup</button>
     </ng-template>
   </nav>
 
+  <!-- Hamburger Menu Toggle (Visible only in mobile view) -->
   <button mat-icon-button class="navbar__toggle" (click)="toggleMenu()">
     <mat-icon>menu</mat-icon>
   </button>
 </mat-toolbar>
+
+<!-- Mobile Menu (Visible only in mobile view) -->
+<div class="mobile-menu" [class.open]="menuOpen">
+  <!-- Login and Signup -->
+  <div class="mobile-auth">
+    <button mat-button routerLink="/login">Login</button>
+    <button mat-raised-button color="accent" routerLink="/signup">Signup</button>
+  </div>
+
+  <!-- Divider -->
+  <mat-divider></mat-divider>
+
+  <!-- QuestionBank and Course Overview -->
+  <div class="mobile-nav">
+    <button mat-button [matMenuTriggerFor]="questionBankMenu">QuestionBank</button>
+    <button mat-button [routerLink]="['/course-overview']">Course Overview</button>
+  </div>
+</div>

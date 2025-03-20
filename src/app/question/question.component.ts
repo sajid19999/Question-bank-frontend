@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { QuestionService } from '../services/question.service';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -11,7 +11,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { isPlatformBrowser } from '@angular/common';
+
 type Chapter = {
   title: string; // Maps to subTopic from the backend
   subtopics: string[]; // Maps to subSection from the backend
@@ -70,22 +72,23 @@ export class QuestionComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private questionService: QuestionService
+    private questionService: QuestionService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
-    console.log('Initializing QuestionComponent...');
+    if (isPlatformBrowser(this.platformId)) {
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p')) {
+          e.preventDefault();
+          alert('Screenshots and printing are disabled.');
+        }
+      });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p')) {
-        e.preventDefault();
-        alert('Screenshots and printing are disabled.');
-      }
-    });
-
-    document.addEventListener('copy', (e) => e.preventDefault());
-    document.addEventListener('cut', (e) => e.preventDefault());
-    document.addEventListener('paste', (e) => e.preventDefault());
+      document.addEventListener('copy', (e) => e.preventDefault());
+      document.addEventListener('cut', (e) => e.preventDefault());
+      document.addEventListener('paste', (e) => e.preventDefault());
+    }
 
     // Get the selected topic from the route parameters
     this.route.paramMap.subscribe((params) => {

@@ -1,14 +1,15 @@
 {
   "name": "question-bank-frontend",
   "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:question-bank-frontend": "node dist/question-bank-frontend/server/server.mjs"
-  },
+ "scripts": {
+  "ng": "ng",
+  "start": "ng serve",
+  "build": "ng build",
+  "watch": "ng build --watch --configuration development",
+  "test": "ng test",
+  "build:ssr": "ng build && ng run question-bank-frontend:server",
+  "serve:ssr": "node dist/question-bank-frontend/server/server.mjs"
+},
   "private": true,
   "dependencies": {
     "@angular/animations": "^18.2.0",

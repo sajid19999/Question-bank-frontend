@@ -1,0 +1,57 @@
+<div class="contact-container">
+  <h1>Reach out to Our Team for Expert Support</h1>
+  <div class="contact-content">
+    <!-- Left Section: Contact Information -->
+    <div class="contact-info">
+      <h2>Contact Information</h2>
+      <p><strong>Email:</strong> support&#64;example.com</p>
+      <p><strong>Phone:</strong> +1 234 567 890</p>
+      <p><strong>Address:</strong> 123 Main St, City, Country</p>
+    </div>
+
+    <!-- Right Section: Contact Form -->
+    <div class="contact-form">
+      <h2>Send Us a Message</h2>
+      <form (ngSubmit)="sendMessage()">
+        <mat-form-field appearance="fill">
+          <mat-label>First Name</mat-label>
+          <input matInput [(ngModel)]="firstName" name="firstName" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Last Name</mat-label>
+          <input matInput [(ngModel)]="lastName" name="lastName" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="email" name="email" type="email" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Message</mat-label>
+          <textarea matInput [(ngModel)]="message" name="message" rows="5" required></textarea>
+        </mat-form-field>
+
+        <button mat-raised-button type="submit">Send Message</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <div class="faq-title">
+      <h2>Common Questions</h2>
+    </div>
+    <div class="faq-content">
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let faq of faqs">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{ faq.question }}</mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>{{ faq.answer }}</p>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</div>

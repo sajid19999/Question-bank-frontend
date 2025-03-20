@@ -15,12 +15,14 @@ import { TermsAndConditionsComponent } from './app/terms-and-conditions/terms-an
 import { ForgotPasswordComponent } from './app/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './app/reset-password/reset-password.component';
 import { PricingDetailsComponent } from './app/pricing-details/pricing-details.component';
+import { ContactUsComponent } from './app/contact-us/contact-us.component';
 
 // Explicitly type the routes array as Routes
 const routes: Routes = [
   { path: '', component: HomepageComponent },
   { path: 'terms', component: TermsAndConditionsComponent },
   { path: 'login', component: LoginComponent },
+  { path : 'contact' , component: ContactUsComponent},
   { path: 'account', component: AccountComponent },
   { path: 'pricing-details', component: PricingDetailsComponent },
   { path: 'membership-info', component: MembershipInfoComponent },
