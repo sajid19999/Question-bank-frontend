@@ -1,0 +1,22 @@
+<!-- payment-success.component.html -->
+<div class="payment-container success">
+    <div class="payment-card">
+      <mat-icon class="success-icon">check_circle</mat-icon>
+      <h1>Payment Successful!</h1>
+      
+      <div class="status" [class.verified]="isPaymentVerified">
+        {{ paymentStatus }}
+      </div>
+      
+      <div *ngIf="isPaymentVerified" class="details">
+        <p>Thank you for your payment. Your membership is now active.</p>
+        <p>A confirmation has been sent to your email address.</p>
+      </div>
+  
+      <div class="actions">
+        <button mat-raised-button color="primary" routerLink="/dashboard">
+          Go to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>

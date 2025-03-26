@@ -79,6 +79,7 @@ constructor(private router: Router){}
         type: type,
         monthlyPrice: monthlyPrice,
         yearlyPrice: yearlyPrice,
+        productId: 'prod_Rxbj8M3yYHkXoS',
       },
     });
   }

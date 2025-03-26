@@ -16,6 +16,8 @@ import { ForgotPasswordComponent } from './app/forgot-password/forgot-password.c
 import { ResetPasswordComponent } from './app/reset-password/reset-password.component';
 import { PricingDetailsComponent } from './app/pricing-details/pricing-details.component';
 import { ContactUsComponent } from './app/contact-us/contact-us.component';
+import { PaymentSuccessComponent } from './app/payment-success/payment-success.component';
+import { PaymentCancelComponent } from './app/payment-cancel/payment-cancel.component';
 
 // Explicitly type the routes array as Routes
 const routes: Routes = [
@@ -23,6 +25,8 @@ const routes: Routes = [
   { path: 'terms', component: TermsAndConditionsComponent },
   { path: 'login', component: LoginComponent },
   { path : 'contact' , component: ContactUsComponent},
+  {path : 'success', component:PaymentSuccessComponent},
+  {path:'cancel',component:PaymentCancelComponent},
   { path: 'account', component: AccountComponent },
   { path: 'pricing-details', component: PricingDetailsComponent },
   { path: 'membership-info', component: MembershipInfoComponent },

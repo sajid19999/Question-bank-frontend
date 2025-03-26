@@ -1,0 +1,19 @@
+<!-- payment-cancel.component.html -->
+<div class="payment-container cancel">
+    <div class="payment-card">
+      <mat-icon class="cancel-icon">error</mat-icon>
+      <h1>Payment Cancelled</h1>
+      
+      <p>Your payment was not completed.</p>
+      <p>No charges have been made to your account.</p>
+  
+      <div class="actions">
+        <button mat-raised-button color="primary" (click)="retryPayment()">
+          Retry Payment
+        </button>
+        <button mat-button routerLink="/">
+          Return Home
+        </button>
+      </div>
+    </div>
+  </div>

@@ -46,7 +46,9 @@ export class NavbarComponent implements OnInit {
   selectTopic(topic: string, membershipType: string): void {
     this.router.navigate(['/questions', topic, membershipType]);
   }
-
+  navigateToPricingDetails() {
+    this.router.navigate(['/pricing-details']);
+  }
   /**
    * Toggle mobile menu
    */

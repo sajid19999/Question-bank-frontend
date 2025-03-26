@@ -11,7 +11,7 @@
       <!-- Accounting & Finance -->
       <button mat-menu-item [matMenuTriggerFor]="accountingFinanceMenu">Accounting & Finance</button>
       <mat-menu #accountingFinanceMenu="matMenu">
-        <button mat-menu-item [routerLink]="['/questions', 'Accounting & Finance', 'Basic']">Basic</button>
+        <button mat-menu-item (click)="navigateToPricingDetails()">Basic</button>
         <button mat-menu-item (click)="selectTopic('Accounting & Finance', 'Pro')">Pro</button>
       </mat-menu>
 
