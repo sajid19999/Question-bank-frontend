@@ -28,8 +28,8 @@ interface ApiResponse {
   providedIn: 'root',
 })
 export class MembershipService {
-  private apiUrl = 'http://79.72.87.78:8080/api/auth';
-  private paymentApiUrl = 'http://localhost:8080/api/payment';
+  private apiUrl = 'https://api.questionbanker.co.uk/api/auth';
+  private paymentApiUrl = 'https://api.questionbanker.co.uk/api/payment';
   private httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
