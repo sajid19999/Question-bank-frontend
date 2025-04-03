@@ -53,6 +53,11 @@ button[type="submit"] {
 .forgot-password-link a:hover {
   text-decoration: underline;
 }
+.error-message {
+  color: #f44336; /* Material red */
+  margin-top: 1rem;
+  text-align: center;
+}
 button[type="submit"] {
   display: flex;
   align-items: center;

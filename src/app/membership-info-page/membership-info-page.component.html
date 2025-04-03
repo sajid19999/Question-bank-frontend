@@ -1,42 +1,118 @@
-<section class="membership-info">
-  <h2>Membership Information</h2>
-  <p>You have selected the {{ category }} {{ membershipType }} membership level.</p>
-  <p>
-    The price for membership is
-    {{ isYearly ? yearlyPrice : monthlyPrice }}.
-  </p>
-  <p>
-    Do you have a discount code?
-    <a href="#" style="color: #00B0F0; text-decoration: underline; cursor: pointer;">
-      Click here to enter your discount code
-    </a>
-  </p>
-
-  <!-- Toggle for Monthly/Yearly Pricing -->
-  <div class="toggle-container">
-    <span>Monthly</span>
-    <mat-slide-toggle [(ngModel)]="isYearly" (change)="togglePricing()">
-    </mat-slide-toggle>
-    <span>Yearly</span>
+<div class="membership-container">
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner></mat-spinner>
+    <p>Processing your request...</p>
   </div>
 
-  <h3>Account Information</h3>
-  <form [formGroup]="membershipForm" (submit)="onSubmit()">
+  <!-- Existing Member Upgrade Flow -->
+  <div *ngIf="isExistingMember && !isLoading" class="upgrade-flow">
+    <h2>Upgrade Your Membership</h2>
+    
+    <mat-card class="current-membership">
+      <mat-card-header>
+        <mat-card-title>Your Current Membership</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngFor="let membership of currentMemberships" class="membership-item">
+          <h3>{{ membership.displayName }}</h3>
+          <p>Status: {{ membership.status }}</p>
+          <p *ngIf="membership.exiprationDate">Expires: {{ membership.exiprationDate | date }}</p>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="navigateToPricing()">
+          <mat-icon>search</mat-icon>
+          Browse Other Plans
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <div *ngIf="category && membershipType" class="selected-plan">
+      <h3>Selected Upgrade Plan</h3>
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ category }} {{ membershipType }}</mat-card-title>
+          <mat-card-subtitle>
+            {{ isYearly ? yearlyPrice : monthlyPrice }}
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="benefits-list">
+            <h4>Plan Benefits:</h4>
+            <mat-list>
+              <mat-list-item *ngFor="let benefit of getBenefitsForMembership()">
+                <mat-icon matListIcon>check_circle</mat-icon>
+                <div matLine>{{ benefit }}</div>
+              </mat-list-item>
+            </mat-list>
+          </div>
+
+          <div class="pricing-toggle">
+            <span>Monthly</span>
+            <mat-slide-toggle [(ngModel)]="isYearly" (change)="togglePricing()"></mat-slide-toggle>
+            <span>Yearly</span>
+            <span class="save-badge" *ngIf="isYearly">Save 20%</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- New Member Registration Flow (original form) -->
+  <div *ngIf="!isExistingMember && !isLoading" class="registration-flow">
+    <h2>Complete Your Membership Registration</h2>
+    
+    <div class="price-display">
+      <div>
+        <p>You've selected the <strong>{{ category }} {{ membershipType }}</strong> plan</p>
+        <div class="price-amount">{{ isYearly ? yearlyPrice : monthlyPrice }}</div>
+        <div class="price-period">{{ isYearly ? 'per year' : 'per month' }}</div>
+      </div>
+      
+      <div class="toggle-container">
+        <span>Monthly</span>
+        <mat-slide-toggle [(ngModel)]="isYearly" (change)="togglePricing()"></mat-slide-toggle>
+        <span>Yearly</span>
+        <span class="save-badge" *ngIf="isYearly">Save 20%</span>
+      </div>
+    </div>
+
+    <div *ngIf="category && membershipType">
+      <h3>Your {{ category }} {{ membershipType }} Benefits</h3>
+      <ul class="benefits-list">
+        <li *ngFor="let benefit of getBenefitsForMembership()">{{ benefit }}</li>
+      </ul>
+    </div>
+
+    <div class="discount-section">
+      <p>Have a discount code?</p>
+      <div class="discount-code" *ngIf="showDiscountInput; else showDiscountLink">
+        <mat-form-field appearance="outline" class="discount-input">
+          <mat-label>Enter discount code</mat-label>
+          <input matInput [(ngModel)]="discountCode">
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="discount-button" (click)="applyDiscount()">Apply</button>
+      </div>
+      <ng-template #showDiscountLink>
+        <a (click)="showDiscountInput = true" class="discount-link">
+          <mat-icon>local_offer</mat-icon> Apply discount code
+        </a>
+      </ng-template>
+    </div>
+
+  <h3>Create Your Account</h3>
+  <form [formGroup]="membershipForm" (submit)="onSubmit()" [class.form-loading]="isLoading">
     <!-- Username -->
     <mat-form-field appearance="outline">
       <mat-label>Username</mat-label>
       <input matInput formControlName="username" required>
+      <mat-icon matSuffix>person</mat-icon>
+      <mat-hint>3-20 characters, letters and numbers only</mat-hint>
       <mat-error *ngIf="membershipForm.get('username')?.hasError('required')">
-        Username is required.
+        Username is required
       </mat-error>
       <mat-error *ngIf="membershipForm.get('username')?.hasError('pattern')">
-        Username must contain only alphanumeric characters and underscores.
-      </mat-error>
-      <mat-error *ngIf="membershipForm.get('username')?.hasError('minlength')">
-        Username must be at least 3 characters long.
-      </mat-error>
-      <mat-error *ngIf="membershipForm.get('username')?.hasError('maxlength')">
-        Username cannot exceed 20 characters.
+        Only letters, numbers and underscores allowed
       </mat-error>
     </mat-form-field>
 
@@ -44,17 +120,12 @@
     <mat-form-field appearance="outline">
       <mat-label>Password</mat-label>
       <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password" required>
-      <button mat-icon-button matSuffix (click)="showPassword = !showPassword">
+      <button mat-icon-button matSuffix (click)="showPassword = !showPassword" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
         <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
+      <mat-hint>At least 8 characters with uppercase, lowercase, number and special character</mat-hint>
       <mat-error *ngIf="membershipForm.get('password')?.hasError('required')">
-        Password is required.
-      </mat-error>
-      <mat-error *ngIf="membershipForm.get('password')?.hasError('pattern')">
-        Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.
-      </mat-error>
-      <mat-error *ngIf="membershipForm.get('password')?.hasError('minlength')">
-        Password must be at least 8 characters long.
+        Password is required
       </mat-error>
     </mat-form-field>
 
@@ -62,14 +133,14 @@
     <mat-form-field appearance="outline">
       <mat-label>Confirm Password</mat-label>
       <input matInput [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" required>
-      <button mat-icon-button matSuffix (click)="showConfirmPassword = !showConfirmPassword">
+      <button mat-icon-button matSuffix (click)="showConfirmPassword = !showConfirmPassword" [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'">
         <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
       </button>
       <mat-error *ngIf="membershipForm.get('confirmPassword')?.hasError('required')">
-        Confirm Password is required.
+        Please confirm your password
       </mat-error>
       <mat-error *ngIf="membershipForm.get('confirmPassword')?.hasError('passwordMismatch')">
-        Passwords do not match.
+        Passwords don't match
       </mat-error>
     </mat-form-field>
 
@@ -77,11 +148,12 @@
     <mat-form-field appearance="outline">
       <mat-label>Email Address</mat-label>
       <input matInput type="email" formControlName="email" required>
+      <mat-icon matSuffix>email</mat-icon>
       <mat-error *ngIf="membershipForm.get('email')?.hasError('required')">
-        Email is required.
+        Email is required
       </mat-error>
       <mat-error *ngIf="membershipForm.get('email')?.hasError('email')">
-        Please enter a valid email address.
+        Please enter a valid email
       </mat-error>
     </mat-form-field>
 
@@ -89,24 +161,47 @@
     <mat-form-field appearance="outline">
       <mat-label>Confirm Email Address</mat-label>
       <input matInput type="email" formControlName="confirmEmail" required>
+      <mat-icon matSuffix>email</mat-icon>
       <mat-error *ngIf="membershipForm.get('confirmEmail')?.hasError('required')">
-        Confirm Email is required.
+        Please confirm your email
       </mat-error>
       <mat-error *ngIf="membershipForm.get('confirmEmail')?.hasError('emailMismatch')">
-        Emails do not match.
+        Emails don't match
       </mat-error>
     </mat-form-field>
 
     <!-- Terms & Conditions -->
     <mat-checkbox formControlName="agreeToTerms" required>
-      I agree to the <a href="/terms">Terms & Conditions</a>
+      I agree to the <a href="/terms" target="_blank">Terms & Conditions</a> and 
+      <a href="/privacy" target="_blank">Privacy Policy</a>
     </mat-checkbox>
+    <mat-error *ngIf="membershipForm.get('agreeToTerms')?.hasError('required')">
+      You must agree to the terms
+    </mat-error>
 
     <!-- Submit Button -->
-    <button mat-raised-button color="primary" type="submit" [disabled]="membershipForm.invalid">
-      Submit & Checkout
+    <button mat-raised-button color="primary" type="submit" [disabled]="membershipForm.invalid || isLoading">
+      <span *ngIf="!isLoading">Complete Registration & Checkout</span>
+      <span *ngIf="isLoading">Processing...</span>
     </button>
+
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-spinner diameter="50" color="primary"></mat-spinner>
+      <div class="loading-text">Setting up your account...</div>
+    </div>
   </form>
 
-  <p>Already have an account? <a routerLink="/login" style="color: #00B0F0; text-decoration: underline;">Log in here</a></p>
-</section>
+  <div class="login-prompt">
+    Already have an account? 
+    <a routerLink="/login" class="login-link">
+      <mat-icon>login</mat-icon> Log in here
+    </a>
+  </div>
+
+  <!-- Security Badges -->
+  <div class="security-badges">
+    <mat-icon>security</mat-icon>
+    <span>Secure 256-bit SSL encryption</span>
+    <mat-icon>payment</mat-icon>
+    <span>Safe payment processing</span>
+  </div>

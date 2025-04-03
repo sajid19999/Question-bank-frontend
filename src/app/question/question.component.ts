@@ -13,10 +13,17 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { isPlatformBrowser } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
+import { RouterLink } from '@angular/router';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 type Chapter = {
-  title: string; // Maps to subTopic from the backend
+  title: string;       // Maps to subTopic from the backend
   subtopics: string[]; // Maps to subSection from the backend
+  completed?: boolean;  // Optional flag for completion status
 };
 
 type QuestionDetails = {
@@ -33,7 +40,10 @@ type QuestionDetails = {
   standalone: true,
   imports: [
     CommonModule,
+    MatSliderModule,
+    MatProgressBarModule,
     MatSidenavModule,
+    MatCheckboxModule,
     MatListModule,
     MatExpansionModule,
     FormsModule,
@@ -42,6 +52,7 @@ type QuestionDetails = {
     MatButtonModule,
     MatIcon,
     MatTooltipModule,
+    RouterLink,
     MatProgressSpinnerModule,
   ],
   templateUrl: './question.component.html',
@@ -69,14 +80,32 @@ export class QuestionComponent implements OnInit {
   showResultPopup: boolean = false; // Control visibility of the result popup
   isQuizStarted: boolean = false;
   scoreTooltip: string = ''; // Tooltip text for the button
+  completedSubtopics: Set<string> = new Set<string>();
+  newlyCompletedSubtopics: Set<string> = new Set<string>();
+  hasAccessToCurrentTopic: boolean = false;
+  membershipType: string = 'Basic'; // Or determine based on user's subscription
+selectedTimerDuration: number = 10; // Default to 10 minutes
+showProgressBar: boolean = true;
+autoSubmit: boolean = true;
+timerRunning: boolean = false;
+timeRemaining: number = 0;
+timerProgress: number = 100;
+timeTaken: number = 0;
+timerInterval: any;
+
+
 
   constructor(
     private route: ActivatedRoute,
     private questionService: QuestionService,
+    private authService: AuthService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
+    this.loadCompletedSubtopics();
+    this.allTopics = ['Accounting & Finance', 'Investment & Banking', 'Sales & Trading'];
+    
     if (isPlatformBrowser(this.platformId)) {
       document.addEventListener('keydown', (e) => {
         if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p')) {
@@ -90,65 +119,81 @@ export class QuestionComponent implements OnInit {
       document.addEventListener('paste', (e) => e.preventDefault());
     }
 
-    // Get the selected topic from the route parameters
     this.route.paramMap.subscribe((params) => {
       const topic = params.get('topic');
       if (topic) {
-        console.log('Selected Topic from route:', topic);
         this.selectedTopic = topic;
-        this.loadChaptersForTopic(topic);
-      } else {
-        console.warn('No topic found in route parameters.');
+        this.checkTopicAccess(topic);
+        // Only load chapters if user has access
+        if (this.hasAccessToCurrentTopic) {
+          this.loadChaptersForTopic(topic);
+        }
       }
     });
   }
 
+  checkTopicAccess(topic: string): void {
+    const userAccess = this.authService.getUserAccess();
+    if (!userAccess) {
+      this.hasAccessToCurrentTopic = false;
+      return;
+    }
+
+    this.hasAccessToCurrentTopic = this.determineAccess(topic, userAccess);
+  }
+
+  private determineAccess(topic: string, userAccess: any): boolean {
+    switch(topic) {
+      case 'Accounting & Finance':
+        return userAccess.hasAccountsAndFinanceAccess;
+      case 'Investment & Banking':
+        return userAccess.hasInvestmentBankingAccess;
+      case 'Sales & Trading':
+        return userAccess.hasSalesAndTradingAccess;
+      default:
+        return false;
+    }
+  }
+
+  onTopicSelect(topic: string): void {
+    this.selectedTopic = topic;
+    this.checkTopicAccess(topic);
+    this.showRightSidebar = true;
+    
+    // Only load chapters if user has access
+    if (this.hasAccessToCurrentTopic) {
+      this.loadChaptersForTopic(topic);
+    }
+  }
   // Method to convert index to option prefix (e.g., 0 -> 'a)', 1 -> 'b)', etc.)
   getOptionPrefix(index: number): string {
     return String.fromCharCode(97 + index) + ')'; // 97 is ASCII for 'a'
   }
 
-  onTopicSelect(topic: string): void {
-    this.selectedTopic = topic;
-    this.showRightSidebar = true; // Show the right sidebar
-    this.loadChaptersForTopic(topic);
-  }
 
   loadChaptersForTopic(topic: string): void {
-    console.log('Loading chapters for topic:', topic);
-
-    this.questionService.getSubTopicsByTopic(topic).subscribe({
+    const token = this.authService.getToken();
+    if (!token) {
+      console.error('No token available');
+      return;
+    }  
+    this.questionService.getSubTopicsByTopic(topic, token).subscribe({
       next: (subTopicMap) => {
-        console.log('SubTopicMap received:', subTopicMap);
-
-        const subTopics = subTopicMap[topic] || [];
-        console.log('Subtopics for topic:', subTopics);
-
-        this.chapters = subTopics.map((subTopic: string) => ({
+        this.chapters = subTopicMap[topic].map((subTopic: string) => ({
           title: subTopic,
-          subtopics: [],
+          subtopics: []
         }));
-        console.log('Chapters initialized:', this.chapters);
-
-        this.chapters.forEach((chapter) => {
-          console.log('Fetching subsections for chapter:', chapter.title);
-          this.questionService
-            .getSubSectionsBySubTopic(chapter.title)
+        
+        // Load subsections for each chapter
+        this.chapters.forEach(chapter => {
+          this.questionService.getSubSectionsBySubTopic(chapter.title, token)
             .subscribe({
               next: (subSectionMap) => {
-                console.log('SubSectionMap received for chapter:', chapter.title, subSectionMap);
                 chapter.subtopics = subSectionMap[chapter.title] || [];
-                console.log('Subtopics loaded for chapter:', chapter.title, chapter.subtopics);
-              },
-              error: (err) => {
-                console.error('Error fetching subsections for chapter:', chapter.title, err);
-              },
+              }
             });
         });
-      },
-      error: (err) => {
-        console.error('Error fetching subtopics for topic:', topic, err);
-      },
+      }
     });
   }
 
@@ -159,6 +204,64 @@ export class QuestionComponent implements OnInit {
     this.resetQuestionState();
     this.showSetupSection = true; // Show the setup section
   }
+// Add these methods to your component
+formatLabel(value: number): string {
+  return `${value} min`;
+}
+
+formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+startTimer(): void {
+  if (this.timerInterval) {
+    clearInterval(this.timerInterval);
+  }
+  
+  this.timeRemaining = this.selectedTimerDuration * 60;
+  this.timeTaken = 0;
+  this.timerProgress = 100;
+  
+  this.timerInterval = setInterval(() => {
+    if (this.timerRunning) {
+      this.timeRemaining--;
+      this.timeTaken++;
+      
+      // Update progress bar
+      this.timerProgress = (this.timeRemaining / (this.selectedTimerDuration * 60)) * 100;
+      
+      // Auto-submit if time runs out
+      if (this.timeRemaining <= 0 && this.autoSubmit) {
+        this.onSubmit();
+        this.stopTimer();
+        
+        // Show time's up message
+        if (this.currentQuestionIndex < this.questions.length - 1) {
+          setTimeout(() => this.onNextQuestion(), 1000);
+        } else {
+          this.showResults();
+        }
+      }
+    }
+  }, 1000);
+}
+
+stopTimer(): void {
+  this.timerRunning = false;
+}
+
+toggleTimer(): void {
+  this.timerRunning = !this.timerRunning;
+}
+
+resetTimer(): void {
+  this.stopTimer();
+  this.startTimer();
+}
+
+
 
   resetQuestionState(): void {
     this.currentQuestionIndex = 0;
@@ -169,42 +272,51 @@ export class QuestionComponent implements OnInit {
   }
 
   loadQuestionsForSubsection(subsection: string): void {
-    console.log('Loading questions for subsection:', subsection);
+    const token = this.authService.getToken();
+    if (!token) {
+      console.error('No token available');
+      return;
+    }
+
     this.isLoading = true;
-  
-    // Trim the subsection before passing it to the service
     const trimmedSubsection = subsection.trim();
-  
-    this.questionService.getQuestionsBySubSection(trimmedSubsection, this.selectedQuestionType).subscribe({
-      next: (questionMap) => {
-        console.log('QuestionMap received:', questionMap);
+    
+    this.questionService.getQuestionsBySubSection(
+      trimmedSubsection, 
+      this.selectedQuestionType,
+      token
+    ).subscribe({
+      next: (questionMap: { [key: string]: number[] }) => {
         this.questions = questionMap[trimmedSubsection] || [];
-        this.totalQuestions = this.questions.length; // Set total questions
-        console.log('Questions loaded:', this.questions);
+        this.totalQuestions = this.questions.length;
         if (this.questions.length > 0) {
           this.loadQuestion(this.questions[0]);
         }
         this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Error fetching questions for subsection:', trimmedSubsection, err);
+      error: (err: HttpErrorResponse) => {
+        console.error('Error fetching questions:', err);
         this.isLoading = false;
       },
     });
   }
 
   loadQuestion(questionId: number): void {
-    console.log('Loading question with ID:', questionId);
+    const token = this.authService.getToken();
+    if (!token) {
+      console.error('No token available');
+      return;
+    }
+
     this.isLoading = true;
-    this.questionService.getQuestionById(questionId).subscribe({
-      next: (question) => {
-        console.log('Question received:', question);
+    this.questionService.getQuestionById(questionId, token).subscribe({
+      next: (question: QuestionDetails) => {
         this.currentQuestion = question;
         this.isLoading = false;
         this.isSubmitted = false;
         this.selectedOption = null;
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Error fetching question:', err);
         this.isLoading = false;
       },
@@ -217,30 +329,39 @@ export class QuestionComponent implements OnInit {
   public stripPrefix(answer: string): string {
     return answer.replace(/^[a-zA-Z]\)\s*/, '');
   }
-
+// Save to localStorage
+saveCompletedSubtopics() {
+  localStorage.setItem('completedSubtopics', JSON.stringify(Array.from(this.completedSubtopics)));
+}
+// Load from localStorage
+loadCompletedSubtopics() {
+  const completed = localStorage.getItem('completedSubtopics');
+  if (completed) {
+    this.completedSubtopics = new Set(JSON.parse(completed));
+  }
+}
   onSubmit(): void {
     if (this.selectedOption && this.currentQuestion) {
       this.isSubmitted = true;
-
-      // Strip the prefix from the correct answer
       const correctAnswerWithoutPrefix = this.stripPrefix(this.currentQuestion.correctAnswer);
-
-      // Compare the selected option with the correct answer (without prefix)
       this.isCorrectAnswer = this.selectedOption === correctAnswerWithoutPrefix;
-
-      // Update the score if the answer is correct
+  
       if (this.isCorrectAnswer) {
         this.correctAnswers++;
       }
-
-      // Update the tooltip text
+  // In onSubmit()
+if (this.currentQuestionIndex === this.questions.length - 1) {
+  this.completedSubtopics.add(this.selectedSubsection);
+  this.newlyCompletedSubtopics.add(this.selectedSubsection);
+  setTimeout(() => this.newlyCompletedSubtopics.delete(this.selectedSubsection), 500);
+  this.saveCompletedSubtopics();
+}
+      // Mark subtopic as completed when all questions are answered
+      if (this.currentQuestionIndex === this.questions.length - 1) {
+        this.completedSubtopics.add(this.selectedSubsection);
+      }
+  
       this.scoreTooltip = 'Your score is ready!';
-
-      console.log('Selected Option:', this.selectedOption);
-      console.log('Correct Answer (without prefix):', correctAnswerWithoutPrefix);
-      console.log('Is Correct:', this.isCorrectAnswer);
-
-      // Move to the next question
       this.onNextQuestion();
     }
   }
@@ -261,10 +382,20 @@ export class QuestionComponent implements OnInit {
     this.correctAnswers = 0;
     this.currentQuestionIndex = 0;
     this.showResultPopup = false;
-    this.isQuizStarted = false; // Reset quiz state
+    this.isQuizStarted = false;
+    this.stopTimer();
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
     this.resetQuestionState();
   }
-
+  
+  // Add this to ngOnDestroy to clean up the timer
+  ngOnDestroy(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+  }
   closeResultPopup(): void {
     this.showResultPopup = false;
     this.backToSubsection();
@@ -281,11 +412,17 @@ export class QuestionComponent implements OnInit {
   }
  
 
-  startQuestions(): void {
-    this.showSetupSection = false; // Hide the setup section
-    this.isQuizStarted = true; // Quiz has started
-    this.loadQuestionsForSubsection(this.selectedSubsection); // Load questions
+  // Update your startQuestions method to start the timer
+startQuestions(): void {
+  this.showSetupSection = false;
+  this.isQuizStarted = true;
+  this.loadQuestionsForSubsection(this.selectedSubsection);
+  
+  if (this.showTimer === 'yes') {
+    this.startTimer();
+    this.timerRunning = true;
   }
+}
 // Method to go back to subsection selection
 backToSubsection(): void {
   this.resetQuestionState(); // Reset question state

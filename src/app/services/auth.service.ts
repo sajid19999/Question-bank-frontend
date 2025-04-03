@@ -1,16 +1,17 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import{ jwtDecode}from 'jwt-decode';
 
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+   apiUrl = 'http://localhost:8080/api/auth';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   private isBrowser: boolean;
@@ -38,15 +39,39 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post<{ token: string }>(`${this.apiUrl}/login`, { email, password }).pipe(
-
-      map((response) => {
-        console.log('token 44' + response.token);
-        this.setToken(response.token); // Store token and decode it
-        return response;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+  
+    return this.http.post<{ token: string }>(
+      `${this.apiUrl}/login`, 
+      { email, password },
+      { headers, observe: 'response' } // Add observe: 'response' to get full response
+    ).pipe(
+      map((response: any) => {
+        if (!response.body?.token) {
+          throw new Error('No token received');
+        }
+        this.setToken(response.body.token);
+        console.log("the token 57 : ",this.getToken);
+        console.log("the token 58 : ",response.body);
+        return response.body;
       }),
       catchError((error) => {
-        return throwError(() => new Error(error.error?.error || 'Login failed'));
+        console.error('Full error:', error);
+        // Handle different error cases
+        if (error.error instanceof ErrorEvent) {
+          // Client-side error
+          return throwError(() => 'Network error. Please check your connection.');
+        } else {
+          // Server-side error
+          const serverError = error.error?.message || 
+                            error.error?.error || 
+                            error.message || 
+                            'Login failed. Please try again.';
+          return throwError(() => serverError);
+        }
       })
     );
   }
@@ -104,4 +129,42 @@ export class AuthService {
       })
     );
   }
+  // Add this to your AuthService
+getUserEmail(): string | null {
+  if (this.isBrowser) {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
+        return decodedToken.sub || null;
+      } catch (e) {
+        console.error('Error decoding token:', e);
+        return null;
+      }
+    }
+  }
+  return null;
+}
+getUserAccess(): { 
+  hasAccountsAndFinanceAccess: boolean, 
+  hasInvestmentBankingAccess: boolean, 
+  hasSalesAndTradingAccess: boolean 
+} | null {
+  if (!this.isBrowser) return null;
+  
+  const token = this.getToken();
+  if (!token) return null;
+
+  try {
+    const decodedToken: any = jwtDecode(token);
+    return {
+      hasAccountsAndFinanceAccess: decodedToken.hasAccountsAndFinanceAccess || false,
+      hasInvestmentBankingAccess: decodedToken.hasInvestmentBankingAccess || false,
+      hasSalesAndTradingAccess: decodedToken.hasSalesAndTradingAccess || false
+    };
+  } catch (e) {
+    console.error('Error decoding token:', e);
+    return null;
+  }
+}
 }

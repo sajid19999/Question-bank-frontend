@@ -1,28 +1,94 @@
-.membership-info {
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 30px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  font-family: 'Arial', sans-serif;
+.membership-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 40px;
+  background: linear-gradient(135deg, #f9f9ff 0%, #ffffff 100%);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(5px);
 }
 
 h2, h3 {
-  color: #333;
+  color: #2c3e50;
   margin-bottom: 20px;
-}
-
-h2 {
-  font-size: 24px;
   font-weight: 600;
 }
 
-h3 {
-  font-size: 20px;
-  font-weight: 500;
+h2 {
+  font-size: 28px;
+  position: relative;
+  padding-bottom: 10px;
 }
 
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #00B0F0, #007bb5);
+  border-radius: 2px;
+}
+
+h3 {
+  font-size: 22px;
+  margin-top: 30px;
+}
+
+/* Current Membership Card */
+.current-membership {
+  margin-bottom: 2rem;
+  border-left: 4px solid #3f51b5;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e6f4ff 100%);
+}
+
+.current-membership mat-card-header {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.membership-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.membership-item:last-child {
+  border-bottom: none;
+}
+
+.membership-item h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+/* Price Display - Used in both flows */
+.price-display {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e6f4ff 100%);
+  padding: 20px;
+  border-radius: 12px;
+  margin: 20px 0;
+  border-left: 4px solid #00B0F0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.price-period {
+  font-size: 16px;
+  color: #7f8c8d;
+}
+
+/* Form styles - Used in registration flow */
 form {
   display: flex;
   flex-direction: column;
@@ -33,36 +99,203 @@ mat-form-field {
   width: 100%;
 }
 
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: rgba(0, 176, 240, 0.3);
+  --mdc-outlined-text-field-hover-outline-color: #00B0F0;
+}
+
+/* Buttons - Shared styles */
 button[mat-raised-button] {
   margin-top: 20px;
   margin-bottom: 15px;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #00B0F0, #007bb5);
+  box-shadow: 0 4px 12px rgba(0, 176, 240, 0.3);
+  transition: all 0.3s ease;
 }
 
+button[mat-raised-button]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 176, 240, 0.4);
+}
+
+button[mat-raised-button]:disabled {
+  background: #bdc3c7;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Links */
 a {
   color: #00B0F0;
   text-decoration: none;
-  transition: color 0.3s ease;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 a:hover {
   color: #007bb5;
 }
-/* Toggle container */
-.toggle-container {
+
+a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #00B0F0;
+  transition: width 0.3s ease;
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+/* Toggle container - Shared styles */
+.toggle-container, .pricing-toggle {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px;
+  margin: 25px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 50px;
 }
 
-.toggle-container span {
-  font-size: 1rem;
-  color: #555;
+.toggle-container span, .pricing-toggle span {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2c3e50;
 }
+
+.mat-mdc-slide-toggle {
+  --mdc-switch-selected-track-color: #00B0F0;
+  --mdc-switch-selected-handle-color: #007bb5;
+  --mdc-switch-selected-hover-track-color: #00B0F0;
+  --mdc-switch-selected-hover-handle-color: #007bb5;
+  --mdc-switch-selected-pressed-track-color: #00B0F0;
+  --mdc-switch-selected-pressed-handle-color: #007bb5;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  flex-direction: column;
+}
+
+.loading-text {
+  margin-top: 20px;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+/* Discount code */
+.discount-code {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.discount-input {
+  flex: 1;
+}
+
+.discount-button {
+  height: 56px !important;
+}
+
+/* Benefits list - Shared styles */
+.benefits-list {
+  margin: 20px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.benefits-list li {
+  padding: 10px 0;
+  padding-left: 30px;
+  position: relative;
+  color: #34495e;
+}
+
+.benefits-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #00B0F0;
+  font-weight: bold;
+}
+
+/* Upgrade section specific styles */
+.selected-plan {
+  margin-top: 2rem;
+}
+
+.upgrade-prompt, .new-user-prompt {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* Security badges */
+.security-badges {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.security-badges mat-icon {
+  font-size: 1.2rem;
+  color: #4caf50;
+}
+
+/* Save badge */
+.save-badge, .yearly-savings {
+  background-color: #4caf50;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
 @media screen and (max-width: 768px) {
-  .membership-info {
+  .membership-container {
     margin: 20px;
-    padding: 20px;
+    padding: 25px;
+  }
+  
+  h2 {
+    font-size: 24px;
+  }
+  
+  .price-display, .toggle-container, .pricing-toggle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .security-badges {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }

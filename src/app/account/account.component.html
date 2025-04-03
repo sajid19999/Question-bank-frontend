@@ -1,59 +1,155 @@
 <div class="account-container">
   <h1>My Account</h1>
 
-  <!-- Account Information -->
-  <mat-card class="account-info">
-    <h2>Account Information</h2>
-    <p><strong>Username:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-  </mat-card>
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-spinner></mat-spinner>
+    <p>Loading account information...</p>
+  </div>
 
-  <!-- Account Actions -->
-  <mat-card class="account-actions">
-    <h2>Actions</h2>
-    <button mat-raised-button color="primary" (click)="changePassword()">Change Password</button>
-    <button mat-raised-button color="warn" (click)="logOut()">Log Out</button>
-  </mat-card>
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error</mat-icon>
+    <p>{{ error }}</p>
+  </div>
 
-  <!-- Memberships -->
-  <mat-card class="memberships">
-    <h2>My Memberships</h2>
-    <p>{{ membership.name }}</p>
-    <button mat-raised-button color="accent" (click)="changeMembership()">Change</button>
-    <button mat-raised-button color="warn" (click)="cancelMembership()">Cancel</button>
-  </mat-card>
+  <div *ngIf="!isLoading && !error">
+    <!-- Account Information -->
+    <mat-card class="account-info">
+      <h2>Account Information</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <mat-icon>person</mat-icon>
+          <div>
+            <p class="info-label">Username</p>
+            <p class="info-value">{{ user.username }}</p>
+          </div>
+        </div>
+        <div class="info-item">
+          <mat-icon>email</mat-icon>
+          <div>
+            <p class="info-label">Email</p>
+            <p class="info-value">{{ user.email }}</p>
+          </div>
+        </div>
+      </div>
+    </mat-card>
 
-  <!-- Order History -->
-  <mat-card class="order-history">
-    <h2>Order History</h2>
-    <table mat-table [dataSource]="orders" class="mat-elevation-z8">
-      <!-- Date Column -->
-      <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef>Date</th>
-        <td mat-cell *matCellDef="let order">{{ order.date }}</td>
-      </ng-container>
+    <!-- Active Memberships -->
+    <mat-card class="membership-info">
+      <h2>Active Memberships</h2>
+      
+      <div *ngIf="activeMemberships.length === 0" class="no-memberships">
+        <mat-icon>info</mat-icon>
+        <p>You don't have any active memberships</p>
+      </div>
 
-      <!-- Level Column -->
-      <ng-container matColumnDef="level">
-        <th mat-header-cell *matHeaderCellDef>Level</th>
-        <td mat-cell *matCellDef="let order">{{ order.level }}</td>
-      </ng-container>
+      <div class="membership-grid">
+        <mat-card *ngFor="let membership of activeMemberships" class="membership-card" [class.bundle]="membership.membershipType.includes('BUNDLE')">
+          <div class="membership-header">
+            <mat-chip-set>
+              <mat-chip [color]="getCategoryColor(membership.category || '')" selected>
+                {{ membership.category }}
+              </mat-chip>
+              <mat-chip color="primary" selected *ngIf="membership.membershipType.includes('BUNDLE')">
+                BUNDLE
+              </mat-chip>
+            </mat-chip-set>
+            <span class="membership-status active">ACTIVE</span>
+          </div>
+          
+          <div class="membership-details">
+            <div class="detail-item">
+              <mat-icon matTooltip="Billing Period">calendar_today</mat-icon>
+              <span>{{ membership.billingPeriod }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon matTooltip="Price">attach_money</mat-icon>
+              <span>{{ membership.price }}</span>
+            </div>
+            <div class="detail-item" *ngIf="membership.exiprationDate">
+              <mat-icon matTooltip="Expiration Date">event_available</mat-icon>
+              <span>{{ formatDate(membership.exiprationDate) }}</span>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </mat-card>
 
-      <!-- Total Column -->
-      <ng-container matColumnDef="total">
-        <th mat-header-cell *matHeaderCellDef>Total</th>
-        <td mat-cell *matCellDef="let order">{{ order.total }}</td>
-      </ng-container>
+    <!-- Expired Memberships (in accordion) -->
+    <mat-accordion *ngIf="expiredMemberships.length > 0">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon>history</mat-icon>
+            <span>Expired Memberships ({{ expiredMemberships.length }})</span>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        
+        <div class="membership-grid">
+          <mat-card *ngFor="let membership of expiredMemberships" class="membership-card expired">
+            <div class="membership-header">
+              <mat-chip-set>
+                <mat-chip [color]="getCategoryColor(membership.category || '')" selected>
+                  {{ membership.category }}
+                </mat-chip>
+              </mat-chip-set>
+              <span class="membership-status expired">EXPIRED</span>
+            </div>
+            
+            <div class="membership-details">
+              <div class="detail-item">
+                <mat-icon>calendar_today</mat-icon>
+                <span>{{ membership.billingPeriod }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>event_available</mat-icon>
+                <span>{{ formatDate(membership.exiprationDate) }}</span>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
 
-      <!-- Status Column -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let order">{{ order.status }}</td>
-      </ng-container>
+    <!-- Membership Actions -->
+    <mat-card class="membership-actions">
+      <h2>Membership Management</h2>
+      <div class="action-buttons">
+        <button mat-raised-button color="accent" (click)="changeMembership()">
+          <mat-icon>upgrade</mat-icon> 
+          {{ hasBundle ? 'Change Bundle' : 'Upgrade Membership' }}
+        </button>
+        <button mat-raised-button color="warn" (click)="cancelMembership()">
+          <mat-icon>cancel</mat-icon> Cancel Membership
+        </button>
+      </div>
+    </mat-card>
 
-      <!-- Header and Row Definitions -->
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </mat-card>
+    <!-- Attempted Questions -->
+    <mat-card class="attempted-questions" *ngIf="user.attemptedQuestionList && user.attemptedQuestionList.length > 0">
+      <h2>Attempted Questions</h2>
+      <mat-list>
+        <mat-list-item *ngFor="let question of user.attemptedQuestionList">
+          <mat-icon matListIcon>question_answer</mat-icon>
+          <div matLine>
+            <h3>{{ question.questionText || 'Question' }}</h3>
+            <p>Attempted on: {{ question.attemptedDate ? formatDate(question.attemptedDate) : 'N/A' }}</p>
+            <p>Status: {{ question.isCorrect ? 'Correct' : 'Incorrect' }}</p>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card>
+
+    <!-- Account Actions -->
+    <mat-card class="account-actions">
+      <h2>Account Security</h2>
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" (click)="changePassword()">
+          <mat-icon>lock_reset</mat-icon> Change Password
+        </button>
+        <button mat-raised-button color="warn" (click)="logOut()">
+          <mat-icon>logout</mat-icon> Log Out
+        </button>
+      </div>
+    </mat-card>
+  </div>
 </div>

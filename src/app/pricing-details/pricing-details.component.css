@@ -1,125 +1,298 @@
-/* Container for the entire pricing details section */
+/* pricing-details.component.css */
+
+/* Main container styling */
 .pricing-details-container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-    font-family: 'Arial', sans-serif;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+}
+
+/* Page heading */
+.pricing-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.pricing-header h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #2F3C7E;
+  margin-bottom: 0.5rem;
+}
+
+.pricing-header p {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Pricing toggle switch */
+.pricing-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 50px;
+}
+
+.pricing-toggle span {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.pricing-toggle .yearly-savings {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Accordion styling */
+.pricing-accordion {
+  margin-bottom: 2rem;
+}
+
+/* Expansion panel styling */
+.mat-expansion-panel {
+  margin-bottom: 1rem;
+  border-radius: 10px !important;
+  box-shadow: 0 2px 10px rgba(47, 60, 126, 0.1) !important;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.mat-expansion-panel:hover {
+  box-shadow: 0 5px 15px rgba(47, 60, 126, 0.15) !important;
+}
+
+.mat-expansion-panel-header {
+  padding: 1.5rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #2F3C7E;
+  background-color: #f8f9fa !important;
+}
+
+.mat-expansion-panel-header:hover {
+  background-color: #f1f3f9 !important;
+}
+
+/* Table styling */
+.pricing-table {
+  width: 100%;
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.mat-header-row {
+  background-color: #f5f7ff;
+}
+
+.mat-header-cell {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #2F3C7E;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.mat-cell {
+  font-size: 1rem;
+  color: #555;
+  justify-content: center;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mat-row:last-child .mat-cell {
+  border-bottom: none;
+}
+
+/* Plan name styling */
+.plan-name {
+  font-weight: 600;
+  color: #2F3C7E;
+  margin-bottom: 0.5rem;
+}
+
+/* Price styling */
+.price-amount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2F3C7E;
+}
+
+.price-period {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* Button styling */
+.select-button {
+  background-color: #2F3C7E;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(47, 60, 126, 0.2);
+  min-width: 120px;
+}
+
+.select-button:hover:not(:disabled) {
+  background-color: #1e2a6e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(47, 60, 126, 0.3);
+}
+
+.select-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Current Plan Button */
+.select-button[color="warn"] {
+  background-color: #f44336;
+  box-shadow: 0 2px 5px rgba(244, 67, 54, 0.2);
+}
+
+.select-button[color="warn"]:hover {
+  background-color: #d32f2f;
+  box-shadow: 0 4px 8px rgba(244, 67, 54, 0.3);
+}
+
+/* Bundle Button */
+.select-button[color="accent"] {
+  background-color: #673ab7;
+  box-shadow: 0 2px 5px rgba(103, 58, 183, 0.2);
+}
+
+.select-button[color="accent"]:hover:not(:disabled) {
+  background-color: #5e35b1;
+  box-shadow: 0 4px 8px rgba(103, 58, 183, 0.3);
+}
+
+/* Disabled Button */
+.select-button:disabled {
+  background-color: #bdc3c7;
+  color: #7f8c8d;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Bundle section styling */
+.bundle-section {
+  margin-top: 3rem;
+  border: 2px solid #2F3C7E;
+  border-radius: 12px;
+  padding: 1rem;
+  background-color: #f8f9ff;
+}
+
+.bundle-section .mat-expansion-panel {
+  border: none;
+  box-shadow: none !important;
+  background-color: transparent;
+}
+
+.bundle-section .mat-expansion-panel-header {
+  background-color: #2F3C7E !important;
+  color: white !important;
+  border-radius: 8px !important;
+}
+
+.bundle-section .mat-expansion-panel-header:hover {
+  background-color: #1e2a6e !important;
+}
+
+.bundle-section .mat-expansion-panel-header .mat-panel-title {
+  color: white;
+}
+
+/* Feature highlights */
+.feature-highlight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  color: #4CAF50;
+  font-size: 0.9rem;
+}
+
+.feature-highlight mat-icon {
+  font-size: 1rem;
+  width: auto;
+  height: auto;
+}
+
+/* Tooltip styling */
+.mat-tooltip {
+  font-size: 0.9rem !important;
+  padding: 0.5rem 1rem !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .pricing-header h2 {
+    font-size: 1.8rem;
   }
   
-  /* Heading for the page */
-  h2 {
-    text-align: center;
-    color: #2F3C7E;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  
-  /* Toggle container */
-  .toggle-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 30px;
-  }
-  
-  .toggle-container span {
+  .pricing-header p {
     font-size: 1rem;
-    color: #555;
   }
   
-  /* Styles for the accordion */
-  mat-accordion {
-    margin-bottom: 20px;
+  .pricing-toggle {
+    flex-direction: column;
+    gap: 0.5rem;
   }
   
-  /* Styles for each expansion panel */
-  mat-expansion-panel {
-    margin-bottom: 10px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(47, 60, 126, 0.1);
-  }
-  
-  /* Styles for the expansion panel header */
-  mat-expansion-panel-header {
-    background-color: #f5f5f5;
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: #2F3C7E;
-  }
-  
-  /* Styles for the table */
-  mat-table {
-    width: 100%;
-    margin-top: 10px;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  
-  /* Styles for table header cells */
-  mat-header-cell {
-    font-weight: bold;
+  .mat-expansion-panel-header {
+    padding: 1rem;
     font-size: 1rem;
-    color: #2F3C7E;
-    background-color: #f5f5f5;
-    justify-content: center;
   }
   
-  /* Styles for table cells */
-  mat-cell {
-    font-size: 1rem;
-    color: #555;
-    justify-content: center;
-    padding: 10px;
-  }
-  
-  /* Styles for the "Select" button */
-  button {
-    background-color: #2F3C7E;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
+  .mat-header-cell, .mat-cell {
+    padding: 0.8rem;
     font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
   }
   
-  button:hover {
-    background-color: #1e2a6e;
-    transform: translateY(-2px);
+  .select-button {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    min-width: 100px;
   }
   
-  button:active {
-    background-color: #1976d2;
-    transform: translateY(0);
+  .bundle-section {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .pricing-details-container {
+    padding: 1rem 0.5rem;
   }
   
-  /* Responsive styles for smaller screens */
-  @media (max-width: 768px) {
-    .pricing-details-container {
-      padding: 10px;
-    }
-  
-    h2 {
-      font-size: 1.5rem;
-    }
-  
-    mat-expansion-panel-header {
-      font-size: 1rem;
-    }
-  
-    mat-header-cell, mat-cell {
-      font-size: 0.9rem;
-    }
-  
-    button {
-      padding: 6px 12px;
-      font-size: 0.8rem;
-    }
-  
-    .toggle-container span {
-      font-size: 0.9rem;
-    }
+  .mat-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
   }
+  
+  .mat-header-row, .mat-row {
+    min-width: 500px;
+  }
+}

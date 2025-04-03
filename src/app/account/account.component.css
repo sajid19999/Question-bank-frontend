@@ -1,110 +1,199 @@
 .account-container {
-  max-width: 800px;
-  margin: 50px auto;
-  padding: 30px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
 }
 
-h1, h2 {
+h1 {
+  color: #3f51b5;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+h2 {
+  color: #3f51b5;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #3f51b5;
+  padding-bottom: 0.5rem;
+}
+
+mat-card {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+}
+
+.info-item mat-icon {
+  color: #3f51b5;
+  font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+}
+
+.info-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.info-value {
+  font-size: 1.1rem;
+  font-weight: 500;
   color: #333;
-  margin-bottom: 20px;
+  margin: 0.25rem 0 0 0;
 }
 
-.account-info {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  margin-bottom: 20px;
+/* Membership Cards */
+.membership-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
 
-.account-info p {
-  margin: 10px 0;
-  font-size: 16px;
-  color: #555;
+.membership-card {
+  padding: 1.2rem;
+  transition: transform 0.2s;
 }
 
-.account-actions {
-  margin-bottom: 20px;
+.membership-card:hover {
+  transform: translateY(-5px);
 }
 
-.account-actions button {
-  margin-right: 10px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
+.membership-card.bundle {
+  border-left: 4px solid #673ab7;
+  background-color: #f3e5f5;
 }
 
-.account-actions button:hover {
-  background-color: #0056b3;
+.membership-card.expired {
+  opacity: 0.7;
+  background-color: #f5f5f5;
 }
 
-.memberships, .order-history {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  margin-bottom: 20px;
+.membership-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.memberships h2, .order-history h2 {
-  margin-bottom: 15px;
-}
-
-.memberships p {
-  font-size: 16px;
-  color: #555;
-  margin-bottom: 15px;
-}
-
-.memberships button {
-  margin-right: 10px;
-  padding: 8px 16px;
-  background-color: #28a745;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
-}
-
-.memberships button:hover {
-  background-color: #218838;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-table, th, td {
-  border: 1px solid #ddd;
-}
-
-th, td {
-  padding: 12px;
-  text-align: left;
-}
-
-th {
-  background-color: #f8f9fa;
+.membership-status {
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
   font-weight: bold;
-  color: #333;
 }
 
-tr:nth-child(even) {
-  background-color: #f9f9f9;
+.membership-status.active {
+  background-color: #e8f5e9;
+  color: #2e7d32;
 }
 
-tr:hover {
-  background-color: #f1f1f1;
+.membership-status.expired {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.membership-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-item mat-icon {
+  color: #666;
+}
+
+.no-memberships {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+}
+
+.no-memberships mat-icon {
+  color: #666;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.action-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Attempted Questions */
+.attempted-questions {
+  margin-top: 20px;
+}
+
+.attempted-questions mat-list-item {
+  height: auto !important;
+  padding: 10px 0;
+}
+
+.attempted-questions mat-list-item div matLine h3 {
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.attempted-questions mat-list-item div matLine p {
+  margin: 2px 0;
+  font-size: 0.9em;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .account-container {
+    padding: 0.5rem;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-buttons button {
+    width: 100%;
+  }
+
+  .membership-grid {
+    grid-template-columns: 1fr;
+  }
 }

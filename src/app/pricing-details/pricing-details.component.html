@@ -1,59 +1,139 @@
 <div class="pricing-details-container">
-    <h2>Choose Your Plan</h2>
-  
-    <!-- Toggle for Monthly/Yearly Pricing -->
-    <div class="toggle-container">
-      <span>Monthly</span>
-      <mat-slide-toggle [(ngModel)]="isYearly" (ngModelChange)="togglePricing($event)"></mat-slide-toggle>
+  <div class="pricing-header">
+    <h2>Choose Your Perfect Plan</h2>
+    <p>Select the membership that fits your needs. Switch between monthly and yearly billing to see potential savings.</p>
+  </div>
 
-      <span>Yearly</span>
-    </div>
-  
-    <!-- Accordion for Categories -->
+  <!-- Pricing Toggle -->
+  <div class="pricing-toggle">
+    <span>Monthly Billing</span>
+    <mat-slide-toggle [(ngModel)]="isYearly" (ngModelChange)="togglePricing($event)"></mat-slide-toggle>
+    <span>Yearly Billing</span>
+    <span class="yearly-savings" *ngIf="isYearly">Save up to 20%</span>
+  </div>
+
+  <!-- Individual Categories -->
+  <div class="pricing-accordion">
     <mat-accordion>
-      <mat-expansion-panel *ngFor="let category of categories">
+      <mat-expansion-panel *ngFor="let category of categories" [expanded]="true">
         <mat-expansion-panel-header>
           <mat-panel-title>{{ category.name }}</mat-panel-title>
         </mat-expansion-panel-header>
-  
-        <mat-table [dataSource]="category.plans" class="mat-elevation-z8">
+
+        <mat-table [dataSource]="category.plans" class="pricing-table">
           <!-- Plan Column -->
           <ng-container matColumnDef="plan">
             <mat-header-cell *matHeaderCellDef> Plan </mat-header-cell>
-            <mat-cell *matCellDef="let plan"> {{ plan.name }} </mat-cell>
+            <mat-cell *matCellDef="let plan">
+              <div class="plan-name">{{ plan.name }}</div>
+              <div class="feature-highlight" *ngIf="plan.type === 'Individual'">
+                <mat-icon>check_circle</mat-icon>
+                <span>Full access to all {{ category.name }} content</span>
+              </div>
+            </mat-cell>
           </ng-container>
-  
+
           <!-- Price Column -->
           <ng-container matColumnDef="price">
             <mat-header-cell *matHeaderCellDef> Price </mat-header-cell>
             <mat-cell *matCellDef="let plan">
-              <span *ngIf="isYearly; else monthlyPrice">
-                {{ plan.yearlyPrice }}
-              </span>
+              <div *ngIf="isYearly; else monthlyPrice">
+                <span class="price-amount">{{ plan.yearlyPrice.split('/')[0] }}</span>
+                <span class="price-period">/month billed yearly</span>
+              </div>
               <ng-template #monthlyPrice>
-                {{ plan.monthlyPrice }}
+                <span class="price-amount">{{ plan.monthlyPrice.split('/')[0] }}</span>
+                <span class="price-period">/month</span>
               </ng-template>
             </mat-cell>
           </ng-container>
-  
+
           <!-- Action Column -->
           <ng-container matColumnDef="action">
             <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
             <mat-cell *matCellDef="let plan">
-                <button
-                mat-raised-button
-                color="primary"
-                (click)="selectPlan(category.name, plan.type, plan.monthlyPrice, plan.yearlyPrice)"
-              >
-                Select Plan
+              <button mat-raised-button 
+                      [color]="hasMembership(category.name, plan.type) ? 'warn' : 'primary'"
+                      [disabled]="hasMembership(category.name, plan.type)"
+                      [matTooltip]="getPlanTooltip(category.name, plan.type)"
+                      (click)="selectPlan(category.name, plan.type, plan.monthlyPrice, plan.yearlyPrice)">
+                {{ hasMembership(category.name, plan.type) ? 'Current Plan' : (plan.type === 'Basic' ? 'Select' : 'Upgrade') }}
               </button>
             </mat-cell>
           </ng-container>
-  
-          <!-- Header and Row Definitions -->
+
           <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
           <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
         </mat-table>
       </mat-expansion-panel>
     </mat-accordion>
   </div>
+
+  <!-- Bundle Section -->
+  <div class="bundle-section">
+    <h3 class="bundle-title">Premium Bundle - Access All Categories</h3>
+    <p class="bundle-description">Get complete access to all our content with significant savings compared to individual plans.</p>
+    
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>{{ bundlePlan.name }}</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-table [dataSource]="bundlePlan.plans" class="pricing-table">
+          <!-- Plan Column -->
+          <ng-container matColumnDef="plan">
+            <mat-header-cell *matHeaderCellDef> Plan </mat-header-cell>
+            <mat-cell *matCellDef="let plan">
+              <div class="plan-name">{{ plan.name }}</div>
+              <div class="feature-highlight">
+                <mat-icon>check_circle</mat-icon>
+                <span>Access to all categories</span>
+              </div>
+              <div class="feature-highlight">
+                <mat-icon>check_circle</mat-icon>
+                <span>Priority customer support</span>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Price Column -->
+          <ng-container matColumnDef="price">
+            <mat-header-cell *matHeaderCellDef> Price </mat-header-cell>
+            <mat-cell *matCellDef="let plan">
+              <div *ngIf="isYearly; else monthlyPrice">
+                <span class="price-amount">{{ plan.yearlyPrice.split('/')[0] }}</span>
+                <span class="price-period">/month billed yearly</span>
+                <div class="feature-highlight" style="color: #4CAF50;">
+                  <mat-icon>savings</mat-icon>
+                  <span>Save 30% compared to monthly</span>
+                </div>
+              </div>
+              <ng-template #monthlyPrice>
+                <span class="price-amount">{{ plan.monthlyPrice.split('/')[0] }}</span>
+                <span class="price-period">/month</span>
+              </ng-template>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Action Column -->
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+            <mat-cell *matCellDef="let plan">
+              <button mat-raised-button 
+                      [color]="hasMembership(bundlePlan.name, plan.type) ? 'warn' : 'accent'"
+                      [disabled]="hasMembership(bundlePlan.name, plan.type)"
+                      [matTooltip]="getPlanTooltip(bundlePlan.name, plan.type)"
+                      (click)="selectPlan(bundlePlan.name, plan.type, plan.monthlyPrice, plan.yearlyPrice)">
+                {{ hasMembership(bundlePlan.name, plan.type) ? 'Current Plan' : 'Get Bundle' }}
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        </mat-table>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

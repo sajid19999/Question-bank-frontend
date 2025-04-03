@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 type SubsectionResponse = {
@@ -16,60 +16,61 @@ type QuestionDetails = {
 };
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class QuestionService {
   private baseUrl = 'http://localhost:8080/api/questions';
 
   constructor(private http: HttpClient) {}
 
-  // Fetch subtopics for a given topic
-  getSubTopicsByTopic(topic: string): Observable<{ [key: string]: string[] }> {
-    return this.http.get<{ [key: string]: string[] }>(`${this.baseUrl}/topic/${topic}`);
-  }
-
-  // Fetch subsections for a given subtopic
-  getSubSectionsBySubTopic(subTopic: string): Observable<{ [key: string]: string[] }> {
-    return this.http.get<{ [key: string]: string[] }>(`${this.baseUrl}/subTopic/${subTopic}`);
-  }
-
-  getQuestionsBySubSection(subsection: string, questionType: string): Observable<{ [key: string]: number[] }> {
-    // Trim the subsection to remove unnecessary spaces
-    const trimmedSubsection = subsection.trim();
-  
-    // Log the trimmed subsection and question type for debugging
-    console.log('Trimmed Subsection:', trimmedSubsection);
-    console.log('Question Type:', questionType);
-  
-    // Encode the subsection to handle spaces and special characters
-    const encodedSubsection = encodeURIComponent(trimmedSubsection);
-  
-    // Construct the URL with proper formatting
-    const url = `${this.baseUrl}/subSection/${encodedSubsection}/${questionType}`;
-  
-    // Log the final URL for debugging
-    console.log('Final URL:', url);
-  
-    return this.http.get<{ [key: string]: number[] }>(url);
-  }
-
-  // Fetch a specific question by its ID
-  getQuestionById(questionId: number): Observable<QuestionDetails> {
-    return this.http.get<QuestionDetails>(`${this.baseUrl}/${questionId}`);
-  }
-
-  // Submit an answer for a question
-  submitAnswer(questionId: number, isCorrect: boolean, token: string): Observable<any> {
-    const payload = { questionId, isCorrect };
-    return this.http.post(`${this.baseUrl}/submit`, payload, {
-      headers: { Authorization: `Bearer ${token}` },
+  private getAuthHeaders(token: string): HttpHeaders {
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     });
   }
 
-  // Fetch a question by its text
-  getQuestionByText(questionText: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/questionByText`, {
-      params: { question: questionText },
-    });
+  // Topic endpoints
+  getSubTopicsByTopic(topic: string, token: string): Observable<{ [key: string]: string[] }> {
+    const encodedTopic = encodeURIComponent(topic);
+    return this.http.get<{ [key: string]: string[] }>(
+      `${this.baseUrl}/topic/${encodedTopic}`,
+      { headers: this.getAuthHeaders(token) }
+    );
+  }
+
+  // Subtopic endpoints
+  getSubSectionsBySubTopic(subTopic: string, token: string): Observable<{ [key: string]: string[] }> {
+    const encodedSubTopic = encodeURIComponent(subTopic);
+    return this.http.get<{ [key: string]: string[] }>(
+      `${this.baseUrl}/subTopic/${encodedSubTopic}`,
+      { headers: this.getAuthHeaders(token) }
+    );
+  }
+
+  // Subsection endpoints
+  getQuestionsBySubSection(subsection: string, questionType: string, token: string): Observable<{ [key: string]: number[] }> {
+    const encodedSubsection = encodeURIComponent(subsection.trim());
+    return this.http.get<{ [key: string]: number[] }>(
+      `${this.baseUrl}/subSection/${encodedSubsection}/${questionType}`,
+      { headers: this.getAuthHeaders(token) }
+    );
+  }
+
+  // Question endpoints
+  getQuestionById(questionId: number, token: string): Observable<QuestionDetails> {
+    return this.http.get<QuestionDetails>(
+      `${this.baseUrl}/${questionId}`,
+      { headers: this.getAuthHeaders(token) }
+    );
+  }
+
+  // Answer submission
+  submitAnswer(payload: {questionId: number, selectedAnswer: string}, token: string): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/submit`,
+      payload,
+      { headers: this.getAuthHeaders(token) }
+    );
   }
 }

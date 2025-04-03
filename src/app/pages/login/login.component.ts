@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common'; // Import CommonModule
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { jwtDecode } from 'jwt-decode';
 
@@ -15,7 +15,7 @@ import { jwtDecode } from 'jwt-decode';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule, // Add CommonModule here
+    CommonModule,
     FormsModule,
     MatIconModule,
     MatCardModule,
@@ -32,6 +32,7 @@ export class LoginComponent {
   password: string = '';
   showPassword: boolean = false;
   loading: boolean = false;
+  errorMessage: string = '';
 
   constructor(private router: Router, private authService: AuthService) {}
 
@@ -42,38 +43,54 @@ export class LoginComponent {
   onSubmit(event: Event) {
     event.preventDefault();
     this.loading = true;
-    console.log('Loading state:', this.loading); // Add this line to debug
-  
+    this.errorMessage = '';
+    
+    if (!this.email || !this.password) {
+      this.errorMessage = 'Please enter both email and password';
+      this.loading = false;
+      return;
+    }
+
     this.authService.login(this.email, this.password).subscribe({
-      next: (response: { token: string }) => {
-        this.authService.setToken(response.token);
-        const userInfo = this.authService.getUserInfo();
-        console.log('User Info after Login:', userInfo);
-  
-        const username = userInfo?.UserName;
-        const email = userInfo?.sub;
-        const membershipType = userInfo?.membershipType || 'BASIC';
-  
+      next: (response: any) => {
+        const token = response.token || response;
+        if (typeof token !== 'string') {
+          throw new Error('Invalid token format');
+        }
+        
+        const decoded = jwtDecode(token);
+        console.log("Token in .ts 62 : ",response.token);
+        console.log("Token in .ts 63 : ",decoded);
+        console.log("Response in 64" , response);
         this.router.navigate(['/account'], {
-          queryParams: {
-            username: username,
-            email: email,
-            membershipType,
-          },
+          state: { userInfo: decoded }
         });
       },
-      error: (err: any) => {
-        console.error('Login failed. Error:', err);
-        alert(err.error?.error || 'Invalid email or password');
+      error: (err) => {
+        console.error('Detailed error:', err);
         this.loading = false;
+        
+        // Handle different error cases
+        if (err.status === 400) {
+          this.errorMessage = 'Invalid email or password. Please try again.';
+        } else if (err.status === 0) {
+          this.errorMessage = 'Network error. Please check your connection.';
+        } else {
+          this.errorMessage = typeof err === 'string' ? err : 
+                            err.error?.message || err.message || 'Login failed. Please try again.';
+        }
       },
       complete: () => {
         this.loading = false;
-      },
+      }
     });
   }
 
   navigateToForgotPassword() {
     this.router.navigate(['/forgot-password']);
+  }
+
+  navigateToSignup() {
+    this.router.navigate(['/signup']);
   }
 }

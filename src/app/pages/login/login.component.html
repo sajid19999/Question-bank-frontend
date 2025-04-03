@@ -36,6 +36,11 @@
           <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
       </mat-form-field>
+      
+      <!-- Error message display -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
     </mat-card-content>
     <mat-card-actions>
       <button mat-raised-button type="submit" color="primary" [disabled]="loading">
@@ -45,6 +50,9 @@
     </mat-card-actions>
     <div class="forgot-password-link">
       <a (click)="navigateToForgotPassword()">Forgot Password?</a>
+    </div>
+    <div class="signup-link">
+      Don't have an account? <a (click)="navigateToSignup()">Sign up</a>
     </div>
   </mat-card>
 </form>
